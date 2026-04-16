@@ -1,13 +1,206 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Self-Improvement</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
+    <header>
+        <h1>förbättra vanor</h1>
+        <button id="sidebarToggle" class="header-toggle">◀</button>
+        <div id="userInfo" class="hidden">
+            <span id="userDisplay"></span>
+            <span id="levelDisplay">Level 1 - 0 XP</span>
+        </div>
+    </header>
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <button id="homeBtn">🏠 Start</button>
+            <button id="goalsBtn">🎯 Mål</button>
+            <button id="habitsBtn">🚫 Dåliga vanor</button>
+            <button id="challengesBtn">⚡ Utmaningar</button>
+            <button id="dailyBtn">📝 Dagliga</button>
+            <button id="strategiesBtn">💡 Strategier</button>
+            <button id="programsBtn">📚 Scheman</button>
+            <button id="achievementsBtn">🏆 Prestationer</button>
+            <button id="statsBtn">📊 Statistik</button>
+            <button id="accountBtn">👤 Konto</button>
+        </nav>
+        <main id="mainContent">
+        <section id="login" class="hidden">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="loginBtn">Login</button>
+            <button id="registerBtn">Registera</button>
+            <p id="loginMessage"></p>
+        </section>
+        <section id="home" class="hidden">
+            <div class="welcome-message">
+                <h2>Välkommen tillbaka!</h2>
+                <p>Varje steg räknas litet som stort. Skapa vanor som kan förbättra dig själv. Fortsätt kämpa!</p>
+            </div>
+            <h2>Översikt</h2>
+            <div id="overview">
+                <h3>Din prestanda</h3>
+                <div id="progressStats"></div>
+            </div>
+        </section>
+        <section id="goals" class="hidden">
+            <h2>Mål & Bra vanor</h2>
+            <div id="addGoal">
+                <input type="text" id="goalInput" placeholder="Enter a goal (e.g., Work out 3 times/week)">
+                <button id="addGoalBtn">Skapa mål</button>
+            </div>
+            <div id="goalsList"></div>
+            <div id="goalsEmpty" class="empty-state hidden">
+                <div class="icon">🎯</div>
+                <h3>Inga mål än!</h3>
+                <p>Börja förbättra dig själv med att skapa ditt första mål. Varje stora prestation börjar med ett enkelt steg.</p>
+            </div>
+        </section>
+        <section id="habits" class="hidden">
+            <h2>Bry dåliga vanor</h2>
+            <div id="addHabit">
+                <input type="text" id="habitInput" placeholder="vanor som ska brytas (t.ex., Sluta röka)">
+                <button id="addHabitBtn">lägg till vanor som ska brytas</button>
+            </div>
+            <div id="habitsList"></div>
+            <div id="habitsEmpty" class="empty-state hidden">
+                <div class="icon">🚫</div>
+                <h3>Inga dåliga vanor än!</h3>
+                <p>Hitta vanorna som stoppar dig. Om du bryter de sakta men säkert så kommer du märka ändringar.</p>
+            </div>
+        </section>
+        <section id="challenges" class="hidden">
+            <h2>Utmaningar</h2>
+            <div id="aiGoalGenerator">
+                <h3>AI mål generator</h3>
+                <select id="goalCategory">
+                    <option value="">Välj kategori</option>
+                    <option value="health">Hälsa & träning</option>
+                    <option value="productivity">Produktivitet</option>
+                    <option value="learning">Lärande</option>
+                    <option value="relationships">Relationer</option>
+                    <option value="finance">Ekonomi</option>
+                </select>
+                <button id="generateGoalBtn">Skapa personliga mål</button>
+                <p id="generatedGoal"></p>
+                <button id="addGeneratedGoalBtn" class="hidden">Lägg till målen</button>
+            </div>
+            <div id="premadeChallenges">
+                <h3>Färdig gjorda utmaningar</h3>
+                <div class="challenge" data-challenge="noSugar">
+                    <h4>30 dagar utan socker</h4>
+                    <p>Minska all extra socker som godis och läsk och fokusera på frukt om du har sött sug i 30 dagar.</p>
+                    <button class="joinChallengeBtn">gå med i utmaningen</button>
+                </div>
+                <div class="challenge" data-challenge="earlyBird">
+                    <h4>tidiga morgonar</h4>
+                    <p>Vakna klockan 6 varje dag i 21 dagar</p>
+                    <button class="joinChallengeBtn">gå med i utmaningen</button>
+                </div>
+                <div class="challenge" data-challenge="gratitude">
+                    <h4>tacksamhet</h4>
+                    <p>Skriv ner 3 saker du är tacksam över varje dag i 21 dagar</p>
+                    <button class="joinChallengeBtn">gå med i utmaningen</button>
+                </div>
+                <div class="challenge" data-challenge="earlysleep">
+                    <h4>tidigare kvällar</h4>
+                    <p>Minska tiden du spenderar på mobilen innan du ska gå och lägga dig.</p>
+                    <button class="joinChallengeBtn">gå med i utmaningen</button>
+                </div>
+            </div>
+            <div id="activeChallenges"></div>
+        </section>
+        <section id="daily" class="hidden">
+            <h2>Daily Check-in</h2>
+            <div id="dailyReflection">
+                <h3>How was your day?</h3>
+                <textarea id="reflectionText" placeholder="Reflect on your progress today..."></textarea>
+                <div id="quickQuestions">
+                    <p>Rate your day (1-10): <input type="number" id="dayRating" min="1" max="10"></p>
+                    <p>Did you work on your goals? <input type="checkbox" id="goalsWorked"></p>
+                    <p>Any challenges faced? <textarea id="challengesFaced" placeholder="Describe any obstacles..."></textarea></p>
+                </div>
+                <button id="saveReflectionBtn">Save Daily Reflection</button>
+            </div>
+            <div id="reflectionHistory"></div>
+        </section>
+        <section id="achievements" class="hidden">
+            <h2>Achievements & Badges</h2>
+            <div id="badgesContainer"></div>
+            <div id="recentAchievements"></div>
+        </section>
+        <section id="strategies" class="hidden">
+            <h2>Self-Improvement Strategies</h2>
+            <div id="strategiesList"></div>
+        </section>
+        <section id="programs" class="hidden">
+            <h2>Training Programs</h2>
+            <div id="programTabs">
+                <button id="premadeBtn">Pre-made Programs</button>
+                <button id="customBtn">Create Custom</button>
+            </div>
+            <div id="premadePrograms" class="programSection">
+                <div class="program" data-program="exercise">
+                    <h3>30-Day Exercise Challenge</h3>
+                    <p>Build a daily exercise routine.</p>
+                    <button class="joinProgramBtn">Join Program</button>
+                </div>
+                <div class="program" data-program="reading">
+                    <h3>Reading Habit Builder</h3>
+                    <p>Read 30 minutes daily for 30 days.</p>
+                    <button class="joinProgramBtn">Join Program</button>
+                </div>
+                <div class="program" data-program="meditation">
+                    <h3>Mindfulness Meditation</h3>
+                    <p>Meditate for 10 minutes daily.</p>
+                    <button class="joinProgramBtn">Join Program</button>
+                </div>
+            </div>
+            <div id="customProgram" class="programSection hidden">
+                <h3>Create Your Own Program</h3>
+                <input type="text" id="programName" placeholder="Program Name">
+                <textarea id="programDescription" placeholder="Description"></textarea>
+                <div id="customTasks">
+                    <input type="text" id="taskInput" placeholder="Add a daily task">
+                    <button id="addTaskBtn">Add Task</button>
+                </div>
+                <ul id="taskList"></ul>
+                <button id="saveProgramBtn">Save Program</button>
+            </div>
+            <div id="activePrograms"></div>
+        </section>
+        <section id="stats" class="hidden">
+            <h2>Statistics</h2>
+            <canvas id="goalsChart"></canvas>
+            <canvas id="habitsChart"></canvas>
+        </section>
+        <section id="account" class="hidden">
+            <h2>Account Settings</h2>
+            <div id="accountInfo">
+                <p><strong>Username:</strong> <span id="accountUsername"></span></p>
+                <p><strong>Level:</strong> <span id="accountLevel"></span></p>
+                <p><strong>XP:</strong> <span id="accountXP"></span></p>
+                <p><strong>Member since:</strong> <span id="accountCreated"></span></p>
+            </div>
+            <div id="accountActions">
+                <button id="logoutBtn" class="danger-btn">🚪 Logout</button>
+                <button id="deleteAccountBtn" class="danger-btn">🗑️ Delete Account</button>
+            </div>
+            <div id="deleteConfirm" class="hidden">
+                <p style="color: #e53e3e; font-weight: bold;">⚠️ Are you sure you want to delete your account? This action cannot be undone!</p>
+                <p>All your data (goals, habits, achievements, etc.) will be permanently deleted.</p>
+                <button id="confirmDeleteBtn" class="danger-btn">Yes, Delete My Account</button>
+                <button id="cancelDeleteBtn">Cancel</button>
+            </div>
+        </section>
+    </main>
+    </div>
+    <script src="script.js"></script>
 </body>
-<script src="script.js"></script>
 </html>
