@@ -545,12 +545,12 @@ function removeHabit(index) {
 // Strategies
 function loadStrategies() {
     const strategies = [
-        { title: 'Set SMART Goals', description: 'Make goals Specific, Measurable, Achievable, Relevant, and Time-bound.' },
-        { title: 'Practice Mindfulness', description: 'Take time each day to be present and aware of your thoughts and feelings.' },
-        { title: 'Build Habits Gradually', description: 'Start small and build up to bigger changes to make them sustainable.' },
-        { title: 'Track Your Progress', description: 'Keep a journal or use apps to monitor your improvements.' },
-        { title: 'Seek Accountability', description: 'Share your goals with others to stay motivated.' },
-        { title: 'Learn Continuously', description: 'Read books, take courses, or listen to podcasts on self-improvement.' }
+        { title: 'Sätt mål som följer SMMRT principen', description: 'skapa mål som är Specifika, Mätbara, möjliga, Relevanta, och Tidsbundna.' },
+        { title: 'träna medvetenhet', description: 'ta tid varje dag att vara närvarande och medveten om dina tankar och känslor.' },
+        { title: 'Bygg vana gradvis', description: 'börja litet och bygg upp till större ändringar för att göra dem hållbara.' },
+        { title: 'Spåra din framsteg', description: 'använd en journal eller använd appar för att övervaka dina förbättringar.' },
+        { title: 'Sök ansvarlighet', description: 'dela dina mål med andra för att få motivation.' },
+        { title: 'Lär dig kontinuerligt', description: 'läs böcker, ta kurser, eller lyssna på poddcaster om självförbättring.' }
     ];
     const strategiesList = document.getElementById('strategiesList');
     strategies.forEach(strategy => {
