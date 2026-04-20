@@ -134,7 +134,11 @@
         </section>
         <section id="daily" class="hidden">
             <h2>Dagliga</h2>
-            <div id="dailyReflection">
+            <div id="reflectionTabs">
+                <button id="dailyTabBtn" class="active">📝 Daglig reflektion</button>
+                <button id="weeklyTabBtn">📅 Veckoreflektion</button>
+            </div>
+            <div id="dailyReflection" class="reflection-tab">
                 <h3>hur var din dag?</h3>
                 <textarea id="reflectionText" placeholder="Reflektera över hur din dag var."></textarea>
                 <div id="quickQuestions">
@@ -143,6 +147,17 @@
                     <p>Var det några utmaningar du stötte på under din dag? <textarea id="challengesFaced" placeholder="Beskriv din utmaningar under dagen"></textarea></p>
                 </div>
                 <button id="saveReflectionBtn">Spara dina reflektioner</button>
+            </div>
+            <div id="weeklyReflection" class="reflection-tab hidden">
+                <h3>hur var din vecka?</h3>
+                <textarea id="weeklyReflectionText" placeholder="Reflektera över hur din vecka var. Vilka höjdpunkter och utmaningar hade du?"></textarea>
+                <div id="weeklyQuestions">
+                    <p>Betyg sätt din vecka (1-10): <input type="number" id="weekRating" min="1" max="10"></p>
+                    <p>Vilka mål nådde du denna vecka? <textarea id="weeklyGoals" placeholder="Lista de mål du nådde denna vecka"></textarea></p>
+                    <p>Vilka utmaningar stötte du på denna vecka? <textarea id="weeklyChallenges" placeholder="Beskriv utmaningarna under veckan"></textarea></p>
+                    <p>Vad vill du förbättra nästa vecka? <textarea id="weeklyImprovement" placeholder="Vad kan du göra bättre nästa vecka?"></textarea></p>
+                </div>
+                <button id="saveWeeklyReflectionBtn">Spara veckoreflektion</button>
             </div>
             <div id="reflectionHistory"></div>
         </section>

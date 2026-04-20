@@ -90,6 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Daily check-in
     document.getElementById('saveReflectionBtn').addEventListener('click', saveReflection);
+    document.getElementById('saveWeeklyReflectionBtn').addEventListener('click', saveWeeklyReflection);
+    
+    // Reflection tabs
+    document.getElementById('dailyTabBtn').addEventListener('click', () => switchReflectionTab('daily'));
+    document.getElementById('weeklyTabBtn').addEventListener('click', () => switchReflectionTab('weekly'));
 
     // Programs functionality
     document.getElementById('premadeBtn').addEventListener('click', () => showProgramSection('premade'));
@@ -966,6 +971,74 @@ function loadReflections() {
             <p>${reflection.text}</p>
             <p><strong>Goals worked on:</strong> ${reflection.goalsWorked ? 'Yes' : 'No'}</p>
             ${reflection.challenges ? `<p><strong>Challenges:</strong> ${reflection.challenges}</p>` : ''}
+        `;
+        historyDiv.appendChild(div);
+    });
+}
+
+function switchReflectionTab(tab) {
+    const dailyTab = document.getElementById('dailyReflection');
+    const weeklyTab = document.getElementById('weeklyReflection');
+    const dailyBtn = document.getElementById('dailyTabBtn');
+    const weeklyBtn = document.getElementById('weeklyTabBtn');
+    
+    if (tab === 'daily') {
+        dailyTab.classList.remove('hidden');
+        weeklyTab.classList.add('hidden');
+        dailyBtn.classList.add('active');
+        weeklyBtn.classList.remove('active');
+    } else {
+        dailyTab.classList.add('hidden');
+        weeklyTab.classList.remove('hidden');
+        dailyBtn.classList.remove('active');
+        weeklyBtn.classList.add('active');
+        loadWeeklyReflections();
+    }
+}
+
+function saveWeeklyReflection() {
+    const reflection = document.getElementById('weeklyReflectionText').value;
+    const rating = document.getElementById('weekRating').value;
+    const goals = document.getElementById('weeklyGoals').value;
+    const challenges = document.getElementById('weeklyChallenges').value;
+    const improvement = document.getElementById('weeklyImprovement').value;
+
+    if (reflection.trim()) {
+        const reflections = getUserData('weeklyReflections', []);
+        reflections.push({
+            date: new Date().toISOString(),
+            text: reflection,
+            rating: rating,
+            goals: goals,
+            challenges: challenges,
+            improvement: improvement
+        });
+        setUserData('weeklyReflections', reflections);
+        // Reset form
+        document.getElementById('weeklyReflectionText').value = '';
+        document.getElementById('weekRating').value = '';
+        document.getElementById('weeklyGoals').value = '';
+        document.getElementById('weeklyChallenges').value = '';
+        document.getElementById('weeklyImprovement').value = '';
+        loadWeeklyReflections();
+        addXP(10);
+    }
+}
+
+function loadWeeklyReflections() {
+    const historyDiv = document.getElementById('reflectionHistory');
+    historyDiv.innerHTML = '<h3>Vecko reflektioner</h3>';
+    const reflections = getUserData('weeklyReflections', []);
+    reflections.slice(-4).reverse().forEach(reflection => { // Show last 4 weeks
+        const div = document.createElement('div');
+        div.className = 'reflection-entry';
+        const date = new Date(reflection.date).toLocaleDateString();
+        div.innerHTML = `
+            <h4>${date} - Vecka betyg: ${reflection.rating}/10</h4>
+            <p><strong>Reflektion:</strong> ${reflection.text}</p>
+            ${reflection.goals ? `<p><strong>Mål uppnådda:</strong> ${reflection.goals}</p>` : ''}
+            ${reflection.challenges ? `<p><strong>Utmaningar:</strong> ${reflection.challenges}</p>` : ''}
+            ${reflection.improvement ? `<p><strong>Förbättring nästa vecka:</strong> ${reflection.improvement}</p>` : ''}
         `;
         historyDiv.appendChild(div);
     });
