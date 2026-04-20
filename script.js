@@ -3,8 +3,9 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is logged in
     currentUser = localStorage.getItem('currentUser');
+    loadPreferences();
     if (!currentUser) {
-        showSection('login');
+        showSection('startscreen');
         hideSidebar();
     } else {
         showSection('home');
@@ -13,16 +14,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Navigation
-    const sections = ['home', 'goals', 'habits', 'challenges', 'daily', 'strategies', 'programs', 'achievements', 'stats'];
+    const sections = ['home', 'goals', 'habits', 'challenges', 'daily', 'strategies', 'programs', 'achievements', 'stats', 'settings'];
     sections.forEach(section => {
         document.getElementById(section + 'Btn').addEventListener('click', () => showSection(section));
+    });
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+        showSection('settings');
+        updateSettingsUI();
     });
     document.getElementById('accountBtn').addEventListener('click', () => {
         if (currentUser) {
             showSection('account');
             loadAccountInfo();
         } else {
-            showSection('login');
+            showSection('startscreen');
         }
     });
 
@@ -37,9 +42,19 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSidebarButtons(true);
     }
 
+    // Startscreen buttons
+    document.getElementById('loginStartBtn').addEventListener('click', () => showSection('login'));
+    document.getElementById('registerStartBtn').addEventListener('click', () => showSection('register'));
+
+    // Back buttons
+    document.getElementById('backToStartBtn').addEventListener('click', () => showSection('startscreen'));
+    document.getElementById('backToStartFromRegBtn').addEventListener('click', () => showSection('startscreen'));
+
     // Login/Register
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('registerBtn').addEventListener('click', register);
+    document.getElementById('saveSettingsBtn').addEventListener('click', savePreferences);
+    document.getElementById('resetSettingsBtn').addEventListener('click', resetPreferences);
 
     // Allow Enter key to login
     document.getElementById('username').addEventListener('keypress', (e) => {
@@ -47,6 +62,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('password').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') login();
+    });
+
+    // Allow Enter key to register
+    document.getElementById('regUsername').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') register();
+    });
+    document.getElementById('regPassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') register();
+    });
+    document.getElementById('regConfirmPassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') register();
     });
 
     // Goals functionality
@@ -116,13 +142,16 @@ function hideSidebar() {
 }
 
 function showSection(section) {
-    if (!currentUser && section !== 'login') return;
+    if (!currentUser && section !== 'login' && section !== 'startscreen' && section !== 'register') return;
     document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
     document.getElementById(section).classList.remove('hidden');
 
     // Update active button state in sidebar
-    document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(section + 'Btn').classList.add('active');
+    const btn = document.getElementById(section + 'Btn');
+    if (btn) {
+        document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
     if (section === 'account') {
         document.getElementById('accountBtn').textContent = currentUser ? '👤 Logout' : '👤 Account';
@@ -168,6 +197,7 @@ function updateSidebarButtons(collapsed) {
                 case 'programsBtn': button.textContent = '📚'; break;
                 case 'achievementsBtn': button.textContent = '🏆'; break;
                 case 'statsBtn': button.textContent = '📊'; break;
+                case 'settingsBtn': button.textContent = '⚙️'; break;
                 case 'accountBtn': button.textContent = '👤'; break;
             }
         } else {
@@ -185,6 +215,52 @@ function showProgramSection(type) {
     document.getElementById(type + 'Programs').classList.remove('hidden');
     document.querySelectorAll('#programTabs button').forEach(btn => btn.classList.remove('active'));
     document.getElementById(type + 'Btn').classList.add('active');
+}
+
+function loadPreferences() {
+    const preferences = JSON.parse(localStorage.getItem('preferences') || '{}');
+    const defaultPreferences = {
+        theme: 'light',
+        fontSize: 'medium',
+        cardStyle: 'standard'
+    };
+    const settings = { ...defaultPreferences, ...preferences };
+    applyPreferences(settings);
+    updateSettingsUI(settings);
+}
+
+function applyPreferences(settings) {
+    const body = document.body;
+    body.classList.remove('theme-light', 'theme-dark', 'theme-colorful', 'font-small', 'font-medium', 'font-large', 'card-standard', 'card-soft', 'card-minimal');
+    body.classList.add(`theme-${settings.theme}`);
+    body.classList.add(`font-${settings.fontSize}`);
+    body.classList.add(`card-${settings.cardStyle}`);
+}
+
+function updateSettingsUI(settings) {
+    const preferences = settings || JSON.parse(localStorage.getItem('preferences') || '{}');
+    document.getElementById('themeSelect').value = preferences.theme || 'light';
+    document.getElementById('fontSizeSelect').value = preferences.fontSize || 'medium';
+    document.getElementById('cardStyleSelect').value = preferences.cardStyle || 'standard';
+}
+
+function savePreferences() {
+    const settings = {
+        theme: document.getElementById('themeSelect').value,
+        fontSize: document.getElementById('fontSizeSelect').value,
+        cardStyle: document.getElementById('cardStyleSelect').value
+    };
+    localStorage.setItem('preferences', JSON.stringify(settings));
+    applyPreferences(settings);
+    document.getElementById('settingsMessage').textContent = 'Inställningarna sparade!';
+    document.getElementById('settingsMessage').style.color = '#2f855a';
+}
+
+function resetPreferences() {
+    localStorage.removeItem('preferences');
+    loadPreferences();
+    document.getElementById('settingsMessage').textContent = 'Standardinställningar återställda.';
+    document.getElementById('settingsMessage').style.color = '#2c5282';
 }
 
 // User Account
@@ -217,25 +293,32 @@ function login() {
 }
 
 function register() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('regConfirmPassword').value;
 
-    if (!username || !password) {
-        document.getElementById('loginMessage').textContent = 'Please enter both username and password';
-        document.getElementById('loginMessage').style.color = '#e53e3e';
+    if (!username || !password || !confirmPassword) {
+        document.getElementById('registerMessage').textContent = 'Fyll i alla fält';
+        document.getElementById('registerMessage').style.color = '#e53e3e';
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        document.getElementById('registerMessage').textContent = 'Lösenorden matchar inte';
+        document.getElementById('registerMessage').style.color = '#e53e3e';
         return;
     }
 
     if (password.length < 4) {
-        document.getElementById('loginMessage').textContent = 'Password must be at least 4 characters long';
-        document.getElementById('loginMessage').style.color = '#e53e3e';
+        document.getElementById('registerMessage').textContent = 'Lösenordet måste vara minst 4 tecken långt';
+        document.getElementById('registerMessage').style.color = '#e53e3e';
         return;
     }
 
     const users = JSON.parse(localStorage.getItem('users') || '{}');
     if (users[username]) {
-        document.getElementById('loginMessage').textContent = 'Username already exists';
-        document.getElementById('loginMessage').style.color = '#e53e3e';
+        document.getElementById('registerMessage').textContent = 'Användarnamnet finns redan';
+        document.getElementById('registerMessage').style.color = '#e53e3e';
     } else {
         users[username] = { password, created: new Date().toISOString() };
         localStorage.setItem('users', JSON.stringify(users));
@@ -244,11 +327,12 @@ function register() {
         showSection('home');
         initializeApp();
         showSidebar();
-        document.getElementById('loginMessage').textContent = 'Registration successful! Welcome!';
-        document.getElementById('loginMessage').style.color = '#48bb78';
+        document.getElementById('registerMessage').textContent = 'Registrering lyckades! Välkommen!';
+        document.getElementById('registerMessage').style.color = '#48bb78';
         // Clear form
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
+        document.getElementById('regUsername').value = '';
+        document.getElementById('regPassword').value = '';
+        document.getElementById('regConfirmPassword').value = '';
     }
 }
 

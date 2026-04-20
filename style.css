@@ -158,6 +158,196 @@ section.hidden {
     display: none;
 }
 
+/* Startscreen, Login, Register styling */
+#startscreen, #login, #register {
+    max-width: 400px;
+    margin: 5rem auto;
+    text-align: center;
+}
+
+#startscreen h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+#startscreen p {
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+#startscreen button {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#startscreen button:hover {
+    transform: scale(1.05);
+}
+
+#login input, #register input {
+    width: 100%;
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+#login button, #register button, #saveSettingsBtn, #resetSettingsBtn {
+    width: 100%;
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#login button:hover, #register button:hover, #saveSettingsBtn:hover, #resetSettingsBtn:hover {
+    transform: scale(1.05);
+}
+
+#loginMessage, #registerMessage, #settingsMessage {
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.settings-grid {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.settings-grid label {
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+}
+
+.settings-grid select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+body.theme-dark {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    color: #e2e8f0;
+}
+
+body.theme-dark header,
+body.theme-dark .sidebar,
+body.theme-dark section {
+    background: rgba(26, 32, 44, 0.95);
+    color: #e2e8f0;
+    border-color: rgba(226, 232, 240, 0.08);
+}
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark p,
+body.theme-dark label,
+body.theme-dark .sidebar button,
+body.theme-dark .settings-grid label,
+body.theme-dark #startscreen p,
+body.theme-dark #startscreen h2 {
+    color: #e2e8f0;
+}
+
+body.theme-dark input,
+body.theme-dark textarea {
+    background: #2d3748;
+    color: #e2e8f0;
+    border-color: #4a5568;
+}
+
+body.theme-dark button,
+body.theme-dark .sidebar button:not(.sidebar-toggle) {
+    background: linear-gradient(45deg, #4c51bf, #2d3748);
+    color: #edf2f7;
+}
+
+body.theme-colorful {
+    background: radial-gradient(circle at top left, #ff9a9e, transparent 40%),
+                radial-gradient(circle at bottom right, #845ec2, transparent 35%),
+                linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #111;
+}
+
+body.theme-colorful header,
+body.theme-colorful .sidebar,
+body.theme-colorful section {
+    background: rgba(255, 255, 255, 0.92);
+    color: #111;
+}
+
+body.theme-colorful h1,
+body.theme-colorful h2,
+body.theme-colorful h3,
+body.theme-colorful h4,
+body.theme-colorful p,
+body.theme-colorful label,
+body.theme-colorful .sidebar button,
+body.theme-colorful .settings-grid label,
+body.theme-colorful #startscreen p,
+body.theme-colorful #startscreen h2 {
+    color: #111;
+}
+
+body.theme-colorful input,
+body.theme-colorful textarea {
+    background: #ffffff;
+    color: #111;
+    border-color: #d6bcfa;
+}
+
+body.theme-colorful button,
+body.theme-colorful .sidebar button:not(.sidebar-toggle) {
+    background: linear-gradient(45deg, #ff6fb5, #6b46c1);
+    color: #ffffff;
+}
+
+body.font-small {
+    font-size: 14px;
+}
+
+body.font-medium {
+    font-size: 16px;
+}
+
+body.font-large {
+    font-size: 18px;
+}
+
+body.card-soft section {
+    border-radius: 28px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+body.card-minimal section {
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: none;
+}
+
+
 h1, h2, h3, h4 {
     color: #333;
     margin-bottom: 1rem;

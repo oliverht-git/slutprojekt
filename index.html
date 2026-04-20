@@ -27,16 +27,32 @@
             <button id="programsBtn">📚 Scheman</button>
             <button id="achievementsBtn">🏆 Prestationer</button>
             <button id="statsBtn">📊 Statistik</button>
+            <button id="settingsBtn">⚙️ Inställningar</button>
             <button id="accountBtn">👤 Konto</button>
         </nav>
         <main id="mainContent">
+        <section id="startscreen">
+            <h2>Välkommen till Self-Improvement App</h2>
+            <p>Förbättra dina vanor och nå dina mål!</p>
+            <button id="loginStartBtn">Logga in</button>
+            <button id="registerStartBtn">Skapa konto</button>
+        </section>
         <section id="login" class="hidden">
-            <h2>Login</h2>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
-            <button id="loginBtn">Login</button>
-            <button id="registerBtn">Registera</button>
+            <h2>Logga in</h2>
+            <input type="text" id="username" placeholder="Användarnamn">
+            <input type="password" id="password" placeholder="Lösenord">
+            <button id="loginBtn">Logga in</button>
+            <button id="backToStartBtn">Tillbaka</button>
             <p id="loginMessage"></p>
+        </section>
+        <section id="register" class="hidden">
+            <h2>Skapa konto</h2>
+            <input type="text" id="regUsername" placeholder="Användarnamn">
+            <input type="password" id="regPassword" placeholder="Lösenord">
+            <input type="password" id="regConfirmPassword" placeholder="Bekräfta lösenord">
+            <button id="registerBtn">Skapa konto</button>
+            <button id="backToStartFromRegBtn">Tillbaka</button>
+            <p id="registerMessage"></p>
         </section>
         <section id="home" class="hidden">
             <div class="welcome-message">
@@ -184,6 +200,34 @@
             <h2>Statistik</h2>
             <canvas id="goalsChart"></canvas>
             <canvas id="habitsChart"></canvas>
+        </section>
+        <section id="settings" class="hidden">
+            <h2>Inställningar</h2>
+            <div class="settings-grid">
+                <label for="themeSelect">Tema</label>
+                <select id="themeSelect">
+                    <option value="light">Ljust tema</option>
+                    <option value="dark">Mörkt tema</option>
+                    <option value="colorful">Färgglatt tema</option>
+                </select>
+
+                <label for="fontSizeSelect">Textstorlek</label>
+                <select id="fontSizeSelect">
+                    <option value="small">Liten</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Stor</option>
+                </select>
+
+                <label for="cardStyleSelect">Boxstil</label>
+                <select id="cardStyleSelect">
+                    <option value="standard">Standard</option>
+                    <option value="soft">Mjuka kort</option>
+                    <option value="minimal">Minimal</option>
+                </select>
+            </div>
+            <button id="saveSettingsBtn">Spara inställningar</button>
+            <button id="resetSettingsBtn">Återställ standard</button>
+            <p id="settingsMessage"></p>
         </section>
         <section id="account" class="hidden">
             <h2>Konto inställningar</h2>
