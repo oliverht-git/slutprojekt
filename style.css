@@ -92,8 +92,9 @@ header {
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.header-toggle.collapsed {
-    transform: rotate(180deg);
+.header-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .sidebar button:not(.sidebar-toggle) {
