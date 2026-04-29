@@ -1421,11 +1421,11 @@ function updateOverview() {
     const level = Math.floor(xp / 100) + 1;
     stats.innerHTML = `
         <p>Level: ${level} (${xp} XP)</p>
-        <p>Goals completed: ${goals.filter(g => g.completed).length}/${goals.length}</p>
-        <p>Habits being tracked: ${habits.length}</p>
-        <p>Active programs: ${programs.length}</p>
-        <p>Active challenges: ${challenges.length}</p>
-        <p>Programs completed: ${programs.filter(p => p.progress >= p.duration).length}</p>
-        <p>Challenges completed: ${challenges.filter(c => c.progress >= c.duration).length}</p>
+        <p>Mål avklarade: ${goals.filter(g => g.completed).length}/${goals.length}</p>
+        <p>Vanor som kontrolleras: ${habits.length}</p>
+        <p>Aktiva program: ${programs.length}</p>
+        <p>Aktiva utmaningar: ${challenges.length}</p>
+        <p>Program avklarade: ${programs.filter(p => p.progress >= p.duration).length}</p>
+        <p>Utmaningar avklarade: ${challenges.filter(c => c.progress >= c.duration).length}</p>
     `;
 }
