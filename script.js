@@ -1,5 +1,200 @@
 let currentUser = null;
 
+const translations = {
+    sv: {
+        appTitle: 'förbättra vanor',
+        homeBtn: '🏠 Start',
+        goalsBtn: '🎯 Mål',
+        habitsBtn: '🚫 Dåliga vanor',
+        challengesBtn: '⚡ Utmaningar',
+        dailyBtn: '📝 Dagliga',
+        strategiesBtn: '💡 Strategier',
+        programsBtn: '📚 Scheman',
+        achievementsBtn: '🏆 Prestationer',
+        statsBtn: '📊 Statistik',
+        settingsBtn: '⚙️ Inställningar',
+        accountBtn: '👤 Konto',
+        startTitle: 'Välkommen till Self-Improvement App',
+        startText: 'Förbättra dina vanor och nå dina mål!',
+        loginStartBtn: 'Logga in',
+        registerStartBtn: 'Skapa konto',
+        loginTitle: 'Logga in',
+        usernamePlaceholder: 'Användarnamn',
+        passwordPlaceholder: 'Lösenord',
+        loginBtn: 'Logga in',
+        backToStartBtn: 'Tillbaka',
+        registerTitle: 'Skapa konto',
+        regUsernamePlaceholder: 'Användarnamn',
+        regPasswordPlaceholder: 'Lösenord',
+        regConfirmPasswordPlaceholder: 'Bekräfta lösenord',
+        registerBtn: 'Skapa konto',
+        backToStartFromRegBtn: 'Tillbaka',
+        homeHeading: 'Välkommen tillbaka!',
+        homeText: 'Varje steg räkns litet som stort. Skapa vanor som kan förbättra dig själv. Fortsätt kämpa!',
+        overviewTitle: 'Din prestanda',
+        goalsHeading: 'Mål & Bra vanor',
+        goalInputPlaceholder: 'Enter a goal (t.ex., Träna 3 gånger/vecka)',
+        addGoalBtn: 'Skapa mål',
+        habitsHeading: 'Bry dåliga vanor',
+        habitInputPlaceholder: 'Vanor som ska brytas (t.ex., Sluta röka)',
+        addHabitBtn: 'lägg till vanor som ska brytas',
+        challengesHeading: 'Utmaningar',
+        aiGoalGeneratorTitle: 'AI mål generator',
+        goalCategoryPlaceholder: 'Välj kategori',
+        generateGoalBtn: 'Skapa personliga mål',
+        addGeneratedGoalBtn: 'Lägg till målen',
+        premadeChallengesHeading: 'Färdig gjorda utmaningar',
+        joinChallengeBtn: 'gå med i utmaningen',
+        dailyHeading: 'Dagliga',
+        dailyTabBtn: '📝 Daglig reflektion',
+        weeklyTabBtn: '📅 Veckoreflektion',
+        dailyReflectionHeading: 'hur var din dag?',
+        reflectionTextPlaceholder: 'Reflektera över hur din dag var.',
+        saveReflectionBtn: 'Spara dina reflektioner',
+        weeklyReflectionHeading: 'hur var din vecka?',
+        weeklyReflectionTextPlaceholder: 'Reflektera över hur din vecka var. Vilka höjdpunkter och utmaningar hade du?',
+        saveWeeklyReflectionBtn: 'Spara veckoreflektion',
+        achievementsHeading: 'prestationer & emblem',
+        strategiesHeading: 'strategier',
+        programsHeading: 'rutiner',
+        premadeBtn: 'färdiggjorda rutiner',
+        customBtn: 'Skapa egna rutiner',
+        customProgramHeading: 'Skapa egna rutiner',
+        programNamePlaceholder: 'Program Name',
+        programDescriptionPlaceholder: 'Description',
+        taskInputPlaceholder: 'lägg till uppgifter (t.ex., ta ut soporna varje måndag)',
+        addTaskBtn: 'Lägg till uppgift',
+        saveProgramBtn: 'Spara program',
+        statsHeading: 'Statistik',
+        settingsHeading: 'Inställningar',
+        themeLabel: 'Tema',
+        fontSizeLabel: 'Textstorlek',
+        cardStyleLabel: 'Boxstil',
+        languageLabel: 'Språk',
+        saveSettingsBtn: 'Spara inställningar',
+        resetSettingsBtn: 'Återställ standard',
+        settingsSaved: 'Inställningarna sparade!',
+        settingsReset: 'Standardinställningar återställda.',
+        accountHeading: 'Konto inställningar',
+        accountUsernameLabel: 'Användarnamn:',
+        accountLevelLabel: 'Level:',
+        accountXPLabel: 'XP:',
+        accountCreatedLabel: 'Medlem sedan:',
+        logoutBtn: '🚪 Logga ut',
+        deleteAccountBtn: '🗑️ Radera konto',
+        deleteConfirmText1: '⚠️ är du säker på att du vill radera ditt konto? Du kan inte ändra dig efter det är gjort!',
+        deleteConfirmText2: 'All din data (Mål, vanor, prestationer, etc.) vill försvinna permanent.',
+        confirmDeleteBtn: 'Ja, Radera kontot',
+        cancelDeleteBtn: 'Avbryt',
+        loginErrorEmpty: 'Vänligen ange både användarnamn och lösenord',
+        loginErrorInvalid: 'Fel användarnamn eller lösenord',
+        registerErrorFields: 'Fyll i alla fält',
+        registerErrorMatch: 'Lösenorden matchar inte',
+        registerErrorShortPass: 'Lösenordet måste vara minst 4 tecken långt',
+        registerErrorUserExists: 'Användarnamnet finns redan',
+        registerSuccess: 'Registrering lyckades! Välkommen!',
+        loginSuccess: 'Inloggning lyckades! Välkommen tillbaka!',
+        welcomeUser: 'Välkommen, {user}!',
+        levelDisplay: 'Level {level} - {xp} XP'
+    },
+    en: {
+        appTitle: 'Improve habits',
+        levelDisplay: 'Level {level} - {xp} XP',
+        homeBtn: '🏠 Home',
+        goalsBtn: '🎯 Goals',
+        habitsBtn: '🚫 Bad habits',
+        challengesBtn: '⚡ Challenges',
+        dailyBtn: '📝 Daily',
+        strategiesBtn: '💡 Strategies',
+        programsBtn: '📚 Plans',
+        achievementsBtn: '🏆 Achievements',
+        statsBtn: '📊 Stats',
+        settingsBtn: '⚙️ Settings',
+        accountBtn: '👤 Account',
+        startTitle: 'Welcome to the Self-Improvement App',
+        startText: 'Improve your habits and reach your goals!',
+        loginStartBtn: 'Login',
+        registerStartBtn: 'Create account',
+        loginTitle: 'Login',
+        usernamePlaceholder: 'Username',
+        passwordPlaceholder: 'Password',
+        loginBtn: 'Login',
+        backToStartBtn: 'Back',
+        registerTitle: 'Create account',
+        regUsernamePlaceholder: 'Username',
+        regPasswordPlaceholder: 'Password',
+        regConfirmPasswordPlaceholder: 'Confirm password',
+        registerBtn: 'Create account',
+        backToStartFromRegBtn: 'Back',
+        homeHeading: 'Welcome back!',
+        homeText: 'Every step matters. Build habits that improve you. Keep going!',
+        overviewTitle: 'Your performance',
+        goalsHeading: 'Goals & Good habits',
+        goalInputPlaceholder: 'Enter a goal (e.g., Work out 3 times/week)',
+        addGoalBtn: 'Create goal',
+        habitsHeading: 'Break bad habits',
+        habitInputPlaceholder: 'Habits to break (e.g., Quit smoking)',
+        addHabitBtn: 'add habits to break',
+        challengesHeading: 'Challenges',
+        aiGoalGeneratorTitle: 'AI goal generator',
+        goalCategoryPlaceholder: 'Choose category',
+        generateGoalBtn: 'Create personalized goals',
+        addGeneratedGoalBtn: 'Add goals',
+        premadeChallengesHeading: 'Pre-made challenges',
+        joinChallengeBtn: 'join challenge',
+        dailyHeading: 'Daily',
+        dailyTabBtn: '📝 Daily reflection',
+        weeklyTabBtn: '📅 Weekly reflection',
+        dailyReflectionHeading: 'How was your day?',
+        reflectionTextPlaceholder: 'Reflect on how your day went.',
+        saveReflectionBtn: 'Save reflections',
+        weeklyReflectionHeading: 'How was your week?',
+        weeklyReflectionTextPlaceholder: 'Reflect on how your week went. What highlights and challenges did you have?',
+        saveWeeklyReflectionBtn: 'Save weekly reflection',
+        achievementsHeading: 'achievements & badges',
+        strategiesHeading: 'strategies',
+        programsHeading: 'routines',
+        premadeBtn: 'pre-made routines',
+        customBtn: 'Create your own routines',
+        customProgramHeading: 'Create your own routines',
+        programNamePlaceholder: 'Program Name',
+        programDescriptionPlaceholder: 'Description',
+        taskInputPlaceholder: 'add tasks (e.g., take out trash every Monday)',
+        addTaskBtn: 'Add task',
+        saveProgramBtn: 'Save program',
+        statsHeading: 'Statistics',
+        settingsHeading: 'Settings',
+        themeLabel: 'Theme',
+        fontSizeLabel: 'Text size',
+        cardStyleLabel: 'Card style',
+        languageLabel: 'Language',
+        saveSettingsBtn: 'Save settings',
+        resetSettingsBtn: 'Reset defaults',
+        settingsSaved: 'Settings saved!',
+        settingsReset: 'Default settings restored.',
+        accountHeading: 'Account settings',
+        accountUsernameLabel: 'Username:',
+        accountLevelLabel: 'Level:',
+        accountXPLabel: 'XP:',
+        accountCreatedLabel: 'Member since:',
+        logoutBtn: '🚪 Log out',
+        deleteAccountBtn: '🗑️ Delete account',
+        deleteConfirmText1: '⚠️ Are you sure you want to delete your account? This cannot be undone!',
+        deleteConfirmText2: 'All your data (Goals, habits, achievements, etc.) will be removed permanently.',
+        confirmDeleteBtn: 'Yes, delete account',
+        cancelDeleteBtn: 'Cancel',
+        loginErrorEmpty: 'Please enter both username and password',
+        loginErrorInvalid: 'Invalid username or password',
+        registerErrorFields: 'Please fill in all fields',
+        registerErrorMatch: 'Passwords do not match',
+        registerErrorShortPass: 'Password must be at least 4 characters long',
+        registerErrorUserExists: 'That username is already taken',
+        registerSuccess: 'Registration successful! Welcome!',
+        loginSuccess: 'Login successful! Welcome back!',
+        welcomeUser: 'Welcome, {user}!'
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is logged in
     currentUser = localStorage.getItem('currentUser');
@@ -11,6 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
         showSection('home');
         initializeApp();
         showSidebar();
+    }
+
+    // Request notification permission
+    if ('Notification' in window) {
+        Notification.requestPermission();
     }
 
     // Navigation
@@ -159,7 +359,8 @@ function showSection(section) {
     }
 
     if (section === 'account') {
-        document.getElementById('accountBtn').textContent = currentUser ? '👤 Logout' : '👤 Account';
+        const t = translations[getCurrentLanguage()] || translations.sv;
+        document.getElementById('accountBtn').textContent = currentUser ? t.logoutBtn : t.accountBtn;
     }
 }
 
@@ -227,11 +428,14 @@ function loadPreferences() {
     const defaultPreferences = {
         theme: 'light',
         fontSize: 'medium',
-        cardStyle: 'standard'
+        cardStyle: 'standard',
+        language: 'sv'
     };
     const settings = { ...defaultPreferences, ...preferences };
     applyPreferences(settings);
     updateSettingsUI(settings);
+    translateUI(settings.language);
+    return settings;
 }
 
 function applyPreferences(settings) {
@@ -247,24 +451,142 @@ function updateSettingsUI(settings) {
     document.getElementById('themeSelect').value = preferences.theme || 'light';
     document.getElementById('fontSizeSelect').value = preferences.fontSize || 'medium';
     document.getElementById('cardStyleSelect').value = preferences.cardStyle || 'standard';
+    document.getElementById('languageSelect').value = preferences.language || 'sv';
+}
+
+function getCurrentLanguage() {
+    const preferences = JSON.parse(localStorage.getItem('preferences') || '{}');
+    return preferences.language || 'sv';
+}
+
+function translateUI(language) {
+    const t = translations[language] || translations.sv;
+    document.querySelector('header h1').textContent = t.appTitle;
+    document.getElementById('homeBtn').textContent = t.homeBtn;
+    document.getElementById('goalsBtn').textContent = t.goalsBtn;
+    document.getElementById('habitsBtn').textContent = t.habitsBtn;
+    document.getElementById('challengesBtn').textContent = t.challengesBtn;
+    document.getElementById('dailyBtn').textContent = t.dailyBtn;
+    document.getElementById('strategiesBtn').textContent = t.strategiesBtn;
+    document.getElementById('programsBtn').textContent = t.programsBtn;
+    document.getElementById('achievementsBtn').textContent = t.achievementsBtn;
+    document.getElementById('statsBtn').textContent = t.statsBtn;
+    document.getElementById('settingsBtn').textContent = t.settingsBtn;
+    document.getElementById('accountBtn').textContent = t.accountBtn;
+
+    document.querySelector('#startscreen h2').textContent = t.startTitle;
+    document.querySelector('#startscreen p').textContent = t.startText;
+    document.getElementById('loginStartBtn').textContent = t.loginStartBtn;
+    document.getElementById('registerStartBtn').textContent = t.registerStartBtn;
+
+    document.querySelector('#login h2').textContent = t.loginTitle;
+    document.getElementById('username').placeholder = t.usernamePlaceholder;
+    document.getElementById('password').placeholder = t.passwordPlaceholder;
+    document.getElementById('loginBtn').textContent = t.loginBtn;
+    document.getElementById('backToStartBtn').textContent = t.backToStartBtn;
+
+    document.querySelector('#register h2').textContent = t.registerTitle;
+    document.getElementById('regUsername').placeholder = t.regUsernamePlaceholder;
+    document.getElementById('regPassword').placeholder = t.regPasswordPlaceholder;
+    document.getElementById('regConfirmPassword').placeholder = t.regConfirmPasswordPlaceholder;
+    document.getElementById('registerBtn').textContent = t.registerBtn;
+    document.getElementById('backToStartFromRegBtn').textContent = t.backToStartFromRegBtn;
+
+    document.querySelector('#home h2').textContent = t.homeHeading;
+    document.querySelector('#home p').textContent = t.homeText;
+    document.querySelector('#overview h3').textContent = t.overviewTitle;
+
+    document.querySelector('#goals h2').textContent = t.goalsHeading;
+    document.getElementById('goalInput').placeholder = t.goalInputPlaceholder;
+    document.getElementById('addGoalBtn').textContent = t.addGoalBtn;
+
+    document.querySelector('#habits h2').textContent = t.habitsHeading;
+    document.getElementById('habitInput').placeholder = t.habitInputPlaceholder;
+    document.getElementById('addHabitBtn').textContent = t.addHabitBtn;
+
+    document.querySelector('#challenges h2').textContent = t.challengesHeading;
+    document.querySelector('#aiGoalGenerator h3').textContent = t.aiGoalGeneratorTitle;
+    document.getElementById('generateGoalBtn').textContent = t.generateGoalBtn;
+    document.getElementById('addGeneratedGoalBtn').textContent = t.addGeneratedGoalBtn;
+    document.querySelector('#premadeChallenges h3').textContent = t.premadeChallengesHeading;
+    document.querySelectorAll('.joinChallengeBtn').forEach(btn => btn.textContent = t.joinChallengeBtn);
+    document.querySelector('#goalCategory option[value=""]').textContent = t.goalCategoryPlaceholder;
+
+    document.querySelector('#daily h2').textContent = t.dailyHeading;
+    document.getElementById('dailyTabBtn').textContent = t.dailyTabBtn;
+    document.getElementById('weeklyTabBtn').textContent = t.weeklyTabBtn;
+    document.querySelector('#dailyReflection h3').textContent = t.dailyReflectionHeading;
+    document.getElementById('reflectionText').placeholder = t.reflectionTextPlaceholder;
+    document.getElementById('saveReflectionBtn').textContent = t.saveReflectionBtn;
+    document.querySelector('#weeklyReflection h3').textContent = t.weeklyReflectionHeading;
+    document.getElementById('weeklyReflectionText').placeholder = t.weeklyReflectionTextPlaceholder;
+    document.getElementById('saveWeeklyReflectionBtn').textContent = t.saveWeeklyReflectionBtn;
+
+    document.querySelector('#achievements h2').textContent = t.achievementsHeading;
+    document.querySelector('#strategies h2').textContent = t.strategiesHeading;
+    document.querySelector('#programs h2').textContent = t.programsHeading;
+    document.getElementById('premadeBtn').textContent = t.premadeBtn;
+    document.getElementById('customBtn').textContent = t.customBtn;
+    document.querySelector('#customProgram h3').textContent = t.customProgramHeading;
+    document.getElementById('programName').placeholder = t.programNamePlaceholder;
+    document.getElementById('programDescription').placeholder = t.programDescriptionPlaceholder;
+    document.getElementById('taskInput').placeholder = t.taskInputPlaceholder;
+    document.getElementById('addTaskBtn').textContent = t.addTaskBtn;
+    document.getElementById('saveProgramBtn').textContent = t.saveProgramBtn;
+
+    document.querySelector('#stats h2').textContent = t.statsHeading;
+    document.querySelector('#settings h2').textContent = t.settingsHeading;
+    document.querySelector('label[for="themeSelect"]').textContent = t.themeLabel;
+    document.querySelector('label[for="fontSizeSelect"]').textContent = t.fontSizeLabel;
+    document.querySelector('label[for="cardStyleSelect"]').textContent = t.cardStyleLabel;
+    document.querySelector('label[for="languageSelect"]').textContent = t.languageLabel;
+    document.getElementById('saveSettingsBtn').textContent = t.saveSettingsBtn;
+    document.getElementById('resetSettingsBtn').textContent = t.resetSettingsBtn;
+    document.getElementById('languageSelect').querySelector('option[value="sv"]').textContent = 'Svenska';
+    document.getElementById('languageSelect').querySelector('option[value="en"]').textContent = 'English';
+
+    document.querySelector('#account h2').textContent = t.accountHeading;
+    const accountLabels = document.querySelectorAll('#accountInfo p strong');
+    if (accountLabels.length >= 4) {
+        accountLabels[0].textContent = t.accountUsernameLabel;
+        accountLabels[1].textContent = t.accountLevelLabel;
+        accountLabels[2].textContent = t.accountXPLabel;
+        accountLabels[3].textContent = t.accountCreatedLabel;
+    }
+    document.getElementById('logoutBtn').textContent = t.logoutBtn;
+    document.getElementById('deleteAccountBtn').textContent = t.deleteAccountBtn;
+    document.querySelector('#deleteConfirm p:nth-child(1)').textContent = t.deleteConfirmText1;
+    document.querySelector('#deleteConfirm p:nth-child(2)').textContent = t.deleteConfirmText2;
+    document.getElementById('confirmDeleteBtn').textContent = t.confirmDeleteBtn;
+    document.getElementById('cancelDeleteBtn').textContent = t.cancelDeleteBtn;
+    if (document.getElementById('sidebar').classList.contains('collapsed')) {
+        updateSidebarButtons(true);
+    }
 }
 
 function savePreferences() {
     const settings = {
         theme: document.getElementById('themeSelect').value,
         fontSize: document.getElementById('fontSizeSelect').value,
-        cardStyle: document.getElementById('cardStyleSelect').value
+        cardStyle: document.getElementById('cardStyleSelect').value,
+        language: document.getElementById('languageSelect').value
     };
     localStorage.setItem('preferences', JSON.stringify(settings));
     applyPreferences(settings);
-    document.getElementById('settingsMessage').textContent = 'Inställningarna sparade!';
+    translateUI(settings.language);
+    if (document.getElementById('sidebar').classList.contains('collapsed')) {
+        updateSidebarButtons(true);
+    }
+    const t = translations[settings.language] || translations.sv;
+    document.getElementById('settingsMessage').textContent = t.settingsSaved;
     document.getElementById('settingsMessage').style.color = '#2f855a';
 }
 
 function resetPreferences() {
     localStorage.removeItem('preferences');
-    loadPreferences();
-    document.getElementById('settingsMessage').textContent = 'Standardinställningar återställda.';
+    const settings = loadPreferences();
+    const t = translations[settings.language] || translations.sv;
+    document.getElementById('settingsMessage').textContent = t.settingsReset;
     document.getElementById('settingsMessage').style.color = '#2c5282';
 }
 
@@ -273,8 +595,9 @@ function login() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
 
+    const t = translations[getCurrentLanguage()] || translations.sv;
     if (!username || !password) {
-        document.getElementById('loginMessage').textContent = 'Please enter both username and password';
+        document.getElementById('loginMessage').textContent = t.loginErrorEmpty;
         document.getElementById('loginMessage').style.color = '#e53e3e';
         return;
     }
@@ -286,13 +609,13 @@ function login() {
         showSection('home');
         initializeApp();
         showSidebar();
-        document.getElementById('loginMessage').textContent = 'Login successful! Welcome back!';
+        document.getElementById('loginMessage').textContent = t.loginSuccess;
         document.getElementById('loginMessage').style.color = '#48bb78';
         // Clear form
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
     } else {
-        document.getElementById('loginMessage').textContent = 'Invalid username or password';
+        document.getElementById('loginMessage').textContent = t.loginErrorInvalid;
         document.getElementById('loginMessage').style.color = '#e53e3e';
     }
 }
@@ -302,27 +625,28 @@ function register() {
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
 
+    const t = translations[getCurrentLanguage()] || translations.sv;
     if (!username || !password || !confirmPassword) {
-        document.getElementById('registerMessage').textContent = 'Fyll i alla fält';
+        document.getElementById('registerMessage').textContent = t.registerErrorFields;
         document.getElementById('registerMessage').style.color = '#e53e3e';
         return;
     }
 
     if (password !== confirmPassword) {
-        document.getElementById('registerMessage').textContent = 'Lösenorden matchar inte';
+        document.getElementById('registerMessage').textContent = t.registerErrorMatch;
         document.getElementById('registerMessage').style.color = '#e53e3e';
         return;
     }
 
     if (password.length < 4) {
-        document.getElementById('registerMessage').textContent = 'Lösenordet måste vara minst 4 tecken långt';
+        document.getElementById('registerMessage').textContent = t.registerErrorShortPass;
         document.getElementById('registerMessage').style.color = '#e53e3e';
         return;
     }
 
     const users = JSON.parse(localStorage.getItem('users') || '{}');
     if (users[username]) {
-        document.getElementById('registerMessage').textContent = 'Användarnamnet finns redan';
+        document.getElementById('registerMessage').textContent = t.registerErrorUserExists;
         document.getElementById('registerMessage').style.color = '#e53e3e';
     } else {
         users[username] = { password, created: new Date().toISOString() };
@@ -332,7 +656,7 @@ function register() {
         showSection('home');
         initializeApp();
         showSidebar();
-        document.getElementById('registerMessage').textContent = 'Registrering lyckades! Välkommen!';
+        document.getElementById('registerMessage').textContent = t.registerSuccess;
         document.getElementById('registerMessage').style.color = '#48bb78';
         // Clear form
         document.getElementById('regUsername').value = '';
@@ -749,16 +1073,20 @@ function setUserData(key, value) {
 }
 
 function updateUserDisplay() {
+    const lang = getCurrentLanguage();
+    const t = translations[lang] || translations.sv;
     if (!currentUser) {
         document.getElementById('userInfo').classList.add('hidden');
         document.getElementById('userDisplay').textContent = '';
         return;
     }
     document.getElementById('userInfo').classList.remove('hidden');
-    document.getElementById('userDisplay').textContent = `Welcome, ${currentUser}!`;
+    document.getElementById('userDisplay').textContent = t.welcomeUser.replace('{user}', currentUser);
     const xp = getUserData('xp', 0);
     const level = Math.floor(xp / 100) + 1;
-    document.getElementById('levelDisplay').textContent = `Level ${level} - ${xp} XP`;
+    document.getElementById('levelDisplay').textContent = t.levelDisplay
+        ? t.levelDisplay.replace('{level}', level).replace('{xp}', xp)
+        : `Level ${level} - ${xp} XP`;
 }
 
 function addXP(points) {
