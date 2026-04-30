@@ -8,6 +8,7 @@ const translations = {
         habitsBtn: '🚫 Dåliga vanor',
         challengesBtn: '⚡ Utmaningar',
         dailyBtn: '📝 Dagliga',
+        studyBtn: '📖 Plugga',
         strategiesBtn: '💡 Strategier',
         programsBtn: '📚 Scheman',
         achievementsBtn: '🏆 Prestationer',
@@ -54,6 +55,28 @@ const translations = {
         weeklyReflectionHeading: 'hur var din vecka?',
         weeklyReflectionTextPlaceholder: 'Reflektera över hur din vecka var. Vilka höjdpunkter och utmaningar hade du?',
         saveWeeklyReflectionBtn: 'Spara veckoreflektion',
+        studyHeading: 'Plugga',
+        studyTimerTitle: 'Studietimer',
+        startTimerBtn: 'Starta timer',
+        pauseTimerBtn: 'Pausa',
+        resetTimerBtn: 'Återställ',
+        studyGoalsTitle: 'Studiemål',
+        studyGoalInputPlaceholder: 'Ange ett studiemål (t.ex., Läs kapitel 5)',
+        addStudyGoalBtn: 'Lägg till mål',
+        studyNotesTitle: 'Studieanteckningar',
+        studyNoteInputPlaceholder: 'Skriv dina studieanteckningar här...',
+        saveStudyNoteBtn: 'Spara anteckning',
+        studySubjectsTitle: 'Ämnen',
+        subjectInputPlaceholder: 'Lägg till ett nytt ämne (t.ex., Matematik)',
+        addSubjectBtn: 'Lägg till ämne',
+        selectSubjectOption: 'Välj ämne',
+        pomodoroTimerTitle: 'Pomodoro Timer',
+        focusTimeMode: 'Fokustid',
+        breakTimeMode: 'Paus',
+        pomodoroMessage: '25 minuter fokus, 5 minuter paus',
+        studyRemindersTitle: 'Påminnelser',
+        reminderInputPlaceholder: 'Vad behöver du komma ihåg?',
+        addReminderBtn: 'Lägg till påminnelse',
         achievementsHeading: 'prestationer & emblem',
         strategiesHeading: 'strategier',
         programsHeading: 'rutiner',
@@ -105,6 +128,7 @@ const translations = {
         habitsBtn: '🚫 Bad habits',
         challengesBtn: '⚡ Challenges',
         dailyBtn: '📝 Daily',
+        studyBtn: '📖 Study',
         strategiesBtn: '💡 Strategies',
         programsBtn: '📚 Plans',
         achievementsBtn: '🏆 Achievements',
@@ -151,6 +175,28 @@ const translations = {
         weeklyReflectionHeading: 'How was your week?',
         weeklyReflectionTextPlaceholder: 'Reflect on how your week went. What highlights and challenges did you have?',
         saveWeeklyReflectionBtn: 'Save weekly reflection',
+        studyHeading: 'Study',
+        studyTimerTitle: 'Study Timer',
+        startTimerBtn: 'Start timer',
+        pauseTimerBtn: 'Pause',
+        resetTimerBtn: 'Reset',
+        studyGoalsTitle: 'Study Goals',
+        studyGoalInputPlaceholder: 'Enter a study goal (e.g., Read chapter 5)',
+        addStudyGoalBtn: 'Add goal',
+        studyNotesTitle: 'Study Notes',
+        studyNoteInputPlaceholder: 'Write your study notes here...',
+        saveStudyNoteBtn: 'Save note',
+        studySubjectsTitle: 'Subjects',
+        subjectInputPlaceholder: 'Add a new subject (e.g., Mathematics)',
+        addSubjectBtn: 'Add subject',
+        selectSubjectOption: 'Select subject',
+        pomodoroTimerTitle: 'Pomodoro Timer',
+        focusTimeMode: 'Focus time',
+        breakTimeMode: 'Break',
+        pomodoroMessage: '25 minutes focus, 5 minutes break',
+        studyRemindersTitle: 'Reminders',
+        reminderInputPlaceholder: 'What do you need to remember?',
+        addReminderBtn: 'Add reminder',
         achievementsHeading: 'achievements & badges',
         strategiesHeading: 'strategies',
         programsHeading: 'routines',
@@ -214,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Navigation
-    const sections = ['home', 'goals', 'habits', 'challenges', 'daily', 'strategies', 'programs', 'achievements', 'stats', 'settings'];
+    const sections = ['home', 'goals', 'habits', 'challenges', 'daily', 'study', 'strategies', 'programs', 'achievements', 'stats', 'settings'];
     sections.forEach(section => {
         document.getElementById(section + 'Btn').addEventListener('click', () => showSection(section));
     });
@@ -295,6 +341,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reflection tabs
     document.getElementById('dailyTabBtn').addEventListener('click', () => switchReflectionTab('daily'));
     document.getElementById('weeklyTabBtn').addEventListener('click', () => switchReflectionTab('weekly'));
+
+    // Study functionality
+    document.getElementById('startTimerBtn').addEventListener('click', startStudyTimer);
+    document.getElementById('pauseTimerBtn').addEventListener('click', pauseStudyTimer);
+    document.getElementById('resetTimerBtn').addEventListener('click', resetStudyTimer);
+    document.getElementById('addSubjectBtn').addEventListener('click', addSubject);
+    document.getElementById('addStudyGoalBtn').addEventListener('click', addStudyGoal);
+    document.getElementById('addReminderBtn').addEventListener('click', addReminder);
+    document.getElementById('saveStudyNoteBtn').addEventListener('click', saveStudyNote);
 
     // Programs functionality
     document.getElementById('premadeBtn').addEventListener('click', () => showProgramSection('premade'));
@@ -399,6 +454,7 @@ function updateSidebarButtons(collapsed) {
                 case 'habitsBtn': button.textContent = '🚫'; break;
                 case 'challengesBtn': button.textContent = '⚡'; break;
                 case 'dailyBtn': button.textContent = '📝'; break;
+                case 'studyBtn': button.textContent = '📖'; break;
                 case 'strategiesBtn': button.textContent = '💡'; break;
                 case 'programsBtn': button.textContent = '📚'; break;
                 case 'achievementsBtn': button.textContent = '🏆'; break;
@@ -521,6 +577,18 @@ function translateUI(language) {
     document.querySelector('#weeklyReflection h3').textContent = t.weeklyReflectionHeading;
     document.getElementById('weeklyReflectionText').placeholder = t.weeklyReflectionTextPlaceholder;
     document.getElementById('saveWeeklyReflectionBtn').textContent = t.saveWeeklyReflectionBtn;
+
+    document.querySelector('#study h2').textContent = t.studyHeading;
+    document.querySelector('#studyTimer h3').textContent = t.studyTimerTitle;
+    document.getElementById('startTimerBtn').textContent = t.startTimerBtn;
+    document.getElementById('pauseTimerBtn').textContent = t.pauseTimerBtn;
+    document.getElementById('resetTimerBtn').textContent = t.resetTimerBtn;
+    document.querySelector('#studyGoals h3').textContent = t.studyGoalsTitle;
+    document.getElementById('studyGoalInput').placeholder = t.studyGoalInputPlaceholder;
+    document.getElementById('addStudyGoalBtn').textContent = t.addStudyGoalBtn;
+    document.querySelector('#studyNotes h3').textContent = t.studyNotesTitle;
+    document.getElementById('studyNoteInput').placeholder = t.studyNoteInputPlaceholder;
+    document.getElementById('saveStudyNoteBtn').textContent = t.saveStudyNoteBtn;
 
     document.querySelector('#achievements h2').textContent = t.achievementsHeading;
     document.querySelector('#strategies h2').textContent = t.strategiesHeading;

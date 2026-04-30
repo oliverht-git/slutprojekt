@@ -23,6 +23,7 @@
             <button id="habitsBtn">🚫 Dåliga vanor</button>
             <button id="challengesBtn">⚡ Utmaningar</button>
             <button id="dailyBtn">📝 Dagliga</button>
+            <button id="studyBtn">📖 Plugga</button>
             <button id="strategiesBtn">💡 Strategier</button>
             <button id="programsBtn">📚 Scheman</button>
             <button id="achievementsBtn">🏆 Prestationer</button>
@@ -160,6 +161,49 @@
                 <button id="saveWeeklyReflectionBtn">Spara veckoreflektion</button>
             </div>
             <div id="reflectionHistory"></div>
+        </section>
+        <section id="study" class="hidden">
+            <h2>Plugga</h2>
+            <div id="studySubjects">
+                <h3>Ämnen</h3>
+                <input type="text" id="subjectInput" placeholder="Lägg till ett nytt ämne (t.ex., Matematik)">
+                <button id="addSubjectBtn">Lägg till ämne</button>
+                <div id="subjectsList"></div>
+            </div>
+            <div id="studyTimer">
+                <h3>Pomodoro Timer</h3>
+                <div id="timerDisplay">25:00</div>
+                <div id="timerMode">Fokustid</div>
+                <button id="startTimerBtn">Starta</button>
+                <button id="pauseTimerBtn" class="hidden">Pausa</button>
+                <button id="resetTimerBtn">Återställ</button>
+                <p id="studyMessage">25 minuter fokus, 5 minuter paus</p>
+            </div>
+            <div id="studyGoals">
+                <h3>Studiemål</h3>
+                <select id="goalSubjectSelect">
+                    <option value="">Välj ämne</option>
+                </select>
+                <input type="text" id="studyGoalInput" placeholder="Ange ett studiemål (t.ex., Läs kapitel 5)">
+                <button id="addStudyGoalBtn">Lägg till mål</button>
+                <div id="studyGoalsList"></div>
+            </div>
+            <div id="studyReminders">
+                <h3>Påminnelser</h3>
+                <input type="text" id="reminderInput" placeholder="Vad behöver du komma ihåg?">
+                <input type="datetime-local" id="reminderTime">
+                <button id="addReminderBtn">Lägg till påminnelse</button>
+                <div id="remindersList"></div>
+            </div>
+            <div id="studyNotes">
+                <h3>Studieanteckningar</h3>
+                <select id="noteSubjectSelect">
+                    <option value="">Välj ämne</option>
+                </select>
+                <textarea id="studyNoteInput" placeholder="Skriv dina studieanteckningar här..."></textarea>
+                <button id="saveStudyNoteBtn">Spara anteckning</button>
+                <div id="studyNotesList"></div>
+            </div>
         </section>
         <section id="achievements" class="hidden">
             <h2>prestationer & emblem</h2>
