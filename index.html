@@ -1,22 +1,30 @@
+<!-- Self-Improvement App - A web application for tracking goals, habits, and personal growth -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Character encoding and viewport settings for proper rendering -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Self-Improvement</title>
+    <!-- Link to the main stylesheet -->
     <link rel="stylesheet" href="style.css">
+    <!-- Chart.js library for creating statistics graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- Main header with app title and sidebar toggle button -->
     <header>
         <h1>Förbättra vanor</h1>
+        <!-- Button to toggle sidebar visibility on mobile -->
         <button id="sidebarToggle" class="header-toggle">◀</button>
+        <!-- Display user info: username and level/XP -->
         <div id="userInfo" class="hidden">
             <span id="userDisplay"></span>
             <span id="levelDisplay">Level 1 - 0 XP</span>
         </div>
     </header>
     <div class="app-container">
+        <!-- Left sidebar navigation menu -->
         <nav class="sidebar" id="sidebar">
             <button id="homeBtn">🏠 Start</button>
             <button id="goalsBtn">🎯 Mål</button>
@@ -31,13 +39,16 @@
             <button id="settingsBtn">⚙️ Inställningar</button>
             <button id="accountBtn">👤 Konto</button>
         </nav>
+        <!-- Main content area where different sections are displayed -->
         <main id="mainContent">
         <section id="startscreen">
+            <!-- Welcome screen shown to non-logged-in users -->
             <h2>Välkommen till Self-Improvement App</h2>
             <p>Förbättra dina vanor och nå dina mål!</p>
             <button id="loginStartBtn">Logga in</button>
             <button id="registerStartBtn">Skapa konto</button>
         </section>
+        <!-- LOGIN SECTION: User can enter credentials to access their account -->
         <section id="login" class="hidden">
             <h2>Logga in</h2>
             <input type="text" id="username" placeholder="Användarnamn">
@@ -46,6 +57,7 @@
             <button id="backToStartBtn">Tillbaka</button>
             <p id="loginMessage"></p>
         </section>
+        <!-- REGISTRATION SECTION: New users can create an account -->
         <section id="register" class="hidden">
             <h2>Skapa konto</h2>
             <input type="text" id="regUsername" placeholder="Användarnamn">
@@ -55,6 +67,7 @@
             <button id="backToStartFromRegBtn">Tillbaka</button>
             <p id="registerMessage"></p>
         </section>
+        <!-- HOME PAGE: Dashboard showing user's overall progress and statistics -->
         <section id="home" class="hidden">
             <div class="welcome-message">
                 <h2>Välkommen tillbaka!</h2>
@@ -66,6 +79,7 @@
                 <div id="progressStats"></div>
             </div>
         </section>
+        <!-- GOALS SECTION: Add and track user's personal goals -->
         <section id="goals" class="hidden">
             <h2>Mål & Bra vanor</h2>
             <div id="addGoal">
@@ -79,6 +93,7 @@
                 <p>Börja förbättra dig själv med att skapa ditt första mål. Varje stora prestation börjar med ett enkelt steg.</p>
             </div>
         </section>
+        <!-- HABITS SECTION: Track and break bad habits -->
         <section id="habits" class="hidden">
             <h2>Bry dåliga vanor</h2>
             <div id="addHabit">
@@ -92,6 +107,7 @@
                 <p>Hitta vanorna som stoppar dig. Om du bryter de sakta men säkert så kommer du märka ändringar.</p>
             </div>
         </section>
+        <!-- CHALLENGES SECTION: Pre-made and AI-generated challenges -->
         <section id="challenges" class="hidden">
             <h2>Utmaningar</h2>
             <div id="aiGoalGenerator">
@@ -133,6 +149,7 @@
             </div>
             <div id="activeChallenges"></div>
         </section>
+        <!-- DAILY SECTION: Daily and weekly reflections -->
         <section id="daily" class="hidden">
             <h2>Dagliga</h2>
             <div id="reflectionTabs">
@@ -162,6 +179,7 @@
             </div>
             <div id="reflectionHistory"></div>
         </section>
+        <!-- STUDY SECTION: Study tools including Pomodoro timer and study tracking -->
         <section id="study" class="hidden">
             <h2>Plugga</h2>
             <div id="studySubjects">
@@ -205,15 +223,18 @@
                 <div id="studyNotesList"></div>
             </div>
         </section>
+        <!-- ACHIEVEMENTS SECTION: Display earned badges and recent achievements -->
         <section id="achievements" class="hidden">
             <h2>prestationer & emblem</h2>
             <div id="badgesContainer"></div>
             <div id="recentAchievements"></div>
         </section>
+        <!-- STRATEGIES SECTION: Display self-improvement strategies and tips -->
         <section id="strategies" class="hidden">
             <h2>strategier</h2>
             <div id="strategiesList"></div>
         </section>
+        <!-- PROGRAMS SECTION: Pre-made and custom routines/programs -->
         <section id="programs" class="hidden">
             <h2>rutiner</h2>
             <div id="programTabs">
@@ -255,11 +276,13 @@
             </div>
             <div id="activePrograms"></div>
         </section>
+        <!-- STATISTICS SECTION: Display charts and graphs of user progress -->
         <section id="stats" class="hidden">
             <h2>Statistik</h2>
             <canvas id="goalsChart"></canvas>
             <canvas id="habitsChart"></canvas>
         </section>
+        <!-- SETTINGS SECTION: Allow users to customize app theme, language, and appearance -->
         <section id="settings" class="hidden">
             <h2>Inställningar</h2>
             <div class="settings-grid">
@@ -294,6 +317,7 @@
             <button id="resetSettingsBtn">Återställ standard</button>
             <p id="settingsMessage"></p>
         </section>
+        <!-- ACCOUNT SECTION: User profile, level, XP, and account management -->
         <section id="account" class="hidden">
             <h2>Konto inställningar</h2>
             <div id="accountInfo">

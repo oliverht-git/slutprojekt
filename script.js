@@ -1,5 +1,23 @@
+/**
+ * SELF-IMPROVEMENT APP - JavaScript Logic
+ * 
+ * This application helps users track and improve their personal development through:
+ * - Goal setting and tracking
+ * - Breaking bad habits with streak tracking
+ * - Taking on challenges
+ * - Daily and weekly reflections
+ * - Study tools (Pomodoro timer, note-taking)
+ * - Achievement system with XP and levels
+ * - Customizable settings (theme, language, appearance)
+ * 
+ * All user data is stored in browser's localStorage
+ */
+
+// Current logged-in user (null if not logged in)
 let currentUser = null;
 
+// Object containing all UI text translations for Swedish (sv) and English (en)
+// Each language has keys for all buttons, labels, messages, and content
 const translations = {
     sv: {
         appTitle: 'Förbättra vanor',
@@ -241,9 +259,11 @@ const translations = {
     }
 };
 
+// Initialize the app when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if user is logged in
+    // Check if a user is already logged in by retrieving from browser storage
     currentUser = localStorage.getItem('currentUser');
+    // Load user's saved preferences (theme, language, font size, etc.)
     loadPreferences();
     if (!currentUser) {
         showSection('startscreen');
@@ -377,77 +397,111 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Initialize the app by loading all user data after login
 function initializeApp() {
+    // Load all user's goals and display them
     loadGoals();
+    // Load all user's bad habits and their streaks
     loadHabits();
+    // Load all active challenges the user has joined
     loadChallenges();
+    // Load daily and weekly reflections history
     loadReflections();
+    // Load earned achievements/badges
     loadAchievements();
+    // Load self-improvement strategies
     loadStrategies();
+    // Load active programs and routines
     loadPrograms();
+    // Update the home page overview with current statistics
     updateOverview();
+    // Generate charts and statistics
     loadStats();
+    // Update user display with username and level
     updateUserDisplay();
+    // Set up scheduled notifications for reminders
     scheduleNotifications();
 }
 
+// ==================== SIDEBAR & NAVIGATION ====================
+
+// Show the sidebar navigation menu
 function showSidebar() {
+    // Add 'visible' class to display the sidebar
     document.getElementById('sidebar').classList.add('visible');
+    // Show the sidebar toggle button
     document.getElementById('sidebarToggle').classList.add('visible');
 }
 
+// Hide the sidebar navigation menu
 function hideSidebar() {
+    // Remove 'visible' class to hide the sidebar
     document.getElementById('sidebar').classList.remove('visible');
+    // Hide the sidebar toggle button
     document.getElementById('sidebarToggle').classList.remove('visible');
 }
 
+// Show a specific section of the app and hide all others
 function showSection(section) {
+    // Prevent non-logged-in users from accessing protected sections
     if (!currentUser && section !== 'login' && section !== 'startscreen' && section !== 'register') return;
+    // Hide all sections by adding the 'hidden' class
     document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+    // Show the requested section by removing the 'hidden' class
     document.getElementById(section).classList.remove('hidden');
 
-    // Update active button state in sidebar
+    // Update active button styling in sidebar
     const btn = document.getElementById(section + 'Btn');
     if (btn) {
+        // Remove active class from all buttons
         document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
+        // Add active class to current button
         btn.classList.add('active');
     }
 
+    // Update account button text based on login status
     if (section === 'account') {
         const t = translations[getCurrentLanguage()] || translations.sv;
         document.getElementById('accountBtn').textContent = currentUser ? t.logoutBtn : t.accountBtn;
     }
 }
 
+// Toggle the sidebar between expanded and collapsed states
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('sidebarToggle');
 
+    // Toggle the 'collapsed' class on the sidebar
     sidebar.classList.toggle('collapsed');
     toggleBtn.classList.toggle('collapsed');
 
     // Update toggle button text
     if (sidebar.classList.contains('collapsed')) {
+        // Sidebar is now collapsed - show expand arrow
         toggleBtn.textContent = '▶';
         // Update sidebar buttons to show only emojis
         updateSidebarButtons(true);
     } else {
+        // Sidebar is now expanded - show collapse arrow
         toggleBtn.textContent = '◀';
         // Update sidebar buttons to show full text
         updateSidebarButtons(false);
     }
 
-    // Save sidebar state to localStorage
+    // Save sidebar state preference to localStorage
     localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
 }
 
+// Update sidebar button display when collapsing/expanding
 function updateSidebarButtons(collapsed) {
+    // Get all sidebar buttons
     const buttons = document.querySelectorAll('.sidebar button:not(#sidebarToggle)');
     buttons.forEach(button => {
         const buttonId = button.id;
         if (collapsed) {
-            // Store original text and show only emoji
+            // Store original text for later restoration
             button.setAttribute('data-original-text', button.textContent);
+            // Show only emoji based on button ID
             switch(buttonId) {
                 case 'homeBtn': button.textContent = '🏠'; break;
                 case 'goalsBtn': button.textContent = '🎯'; break;
@@ -463,7 +517,7 @@ function updateSidebarButtons(collapsed) {
                 case 'accountBtn': button.textContent = '👤'; break;
             }
         } else {
-            // Restore original text
+            // Restore original text when expanding
             const originalText = button.getAttribute('data-original-text');
             if (originalText) {
                 button.textContent = originalText;
@@ -479,45 +533,66 @@ function showProgramSection(type) {
     document.getElementById(type + 'Btn').classList.add('active');
 }
 
+// Load user's saved preferences or set defaults if none exist
 function loadPreferences() {
+    // Get preferences from browser storage, or empty object if not found
     const preferences = JSON.parse(localStorage.getItem('preferences') || '{}');
+    // Define default preferences if user hasn't customized them yet
     const defaultPreferences = {
-        theme: 'light',
-        fontSize: 'medium',
-        cardStyle: 'standard',
-        language: 'sv'
+        theme: 'light',           // UI theme: light, dark, or colorful
+        fontSize: 'medium',       // Text size: small, medium, or large
+        cardStyle: 'standard',    // Card style: standard, soft, or minimal
+        language: 'sv'            // Language: Swedish (sv) or English (en)
     };
+    // Merge user preferences with defaults
     const settings = { ...defaultPreferences, ...preferences };
+    // Apply the preferences to the UI
     applyPreferences(settings);
+    // Update settings dropdowns to show current values
     updateSettingsUI(settings);
+    // Translate UI to the user's preferred language
     translateUI(settings.language);
+    // Return the final settings object
     return settings;
 }
 
+// Apply theme, font size, and card style to the UI
 function applyPreferences(settings) {
+    // Get the body element
     const body = document.body;
+    // Remove all previously applied preference classes
     body.classList.remove('theme-light', 'theme-dark', 'theme-colorful', 'font-small', 'font-medium', 'font-large', 'card-standard', 'card-soft', 'card-minimal');
+    // Add new classes based on current settings
     body.classList.add(`theme-${settings.theme}`);
     body.classList.add(`font-${settings.fontSize}`);
     body.classList.add(`card-${settings.cardStyle}`);
 }
 
+// Update the settings form to show current preferences
 function updateSettingsUI(settings) {
+    // Get current preferences from storage
     const preferences = settings || JSON.parse(localStorage.getItem('preferences') || '{}');
+    // Update each dropdown to show current value
     document.getElementById('themeSelect').value = preferences.theme || 'light';
     document.getElementById('fontSizeSelect').value = preferences.fontSize || 'medium';
     document.getElementById('cardStyleSelect').value = preferences.cardStyle || 'standard';
     document.getElementById('languageSelect').value = preferences.language || 'sv';
 }
 
+// Get the user's preferred language
 function getCurrentLanguage() {
+    // Get preferences from storage
     const preferences = JSON.parse(localStorage.getItem('preferences') || '{}');
+    // Return language preference, default to Swedish
     return preferences.language || 'sv';
 }
 
+// Translate all UI text to the selected language
 function translateUI(language) {
+    // Get translation object for the selected language
     const t = translations[language] || translations.sv;
     document.querySelector('header h1').textContent = t.appTitle;
+    // Update all navigation buttons
     document.getElementById('homeBtn').textContent = t.homeBtn;
     document.getElementById('goalsBtn').textContent = t.goalsBtn;
     document.getElementById('habitsBtn').textContent = t.habitsBtn;
@@ -628,97 +703,134 @@ function translateUI(language) {
     document.getElementById('confirmDeleteBtn').textContent = t.confirmDeleteBtn;
     document.getElementById('cancelDeleteBtn').textContent = t.cancelDeleteBtn;
     if (document.getElementById('sidebar').classList.contains('collapsed')) {
+        // Update collapsed sidebar buttons to show only emojis
         updateSidebarButtons(true);
     }
 }
 
+// Save user's preferences to storage
 function savePreferences() {
+    // Get current values from settings dropdowns
     const settings = {
         theme: document.getElementById('themeSelect').value,
         fontSize: document.getElementById('fontSizeSelect').value,
         cardStyle: document.getElementById('cardStyleSelect').value,
         language: document.getElementById('languageSelect').value
     };
+    // Save to localStorage
     localStorage.setItem('preferences', JSON.stringify(settings));
+    // Apply the preferences immediately
     applyPreferences(settings);
+    // Update UI to reflect new language
     translateUI(settings.language);
+    // Update sidebar buttons if collapsed
     if (document.getElementById('sidebar').classList.contains('collapsed')) {
         updateSidebarButtons(true);
     }
+    // Show success message
     const t = translations[settings.language] || translations.sv;
     document.getElementById('settingsMessage').textContent = t.settingsSaved;
     document.getElementById('settingsMessage').style.color = '#2f855a';
 }
 
+// Reset preferences to defaults
 function resetPreferences() {
+    // Remove preferences from storage
     localStorage.removeItem('preferences');
+    // Reload with defaults
     const settings = loadPreferences();
+    // Show reset message
     const t = translations[settings.language] || translations.sv;
     document.getElementById('settingsMessage').textContent = t.settingsReset;
     document.getElementById('settingsMessage').style.color = '#2c5282';
 }
 
-// User Account
+// ==================== USER AUTHENTICATION ====================
+
+// Handle user login
 function login() {
+    // Get username and password from login form
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
 
+    // Get translated messages for current language
     const t = translations[getCurrentLanguage()] || translations.sv;
+    
+    // Validate that both fields are filled
     if (!username || !password) {
         document.getElementById('loginMessage').textContent = t.loginErrorEmpty;
         document.getElementById('loginMessage').style.color = '#e53e3e';
         return;
     }
 
+    // Get all registered users from storage
     const users = JSON.parse(localStorage.getItem('users') || '{}');
+    // Check if user exists and password matches
     if (users[username] && users[username].password === password) {
+        // Set current user
         currentUser = username;
+        // Save to storage
         localStorage.setItem('currentUser', currentUser);
+        // Navigate to home and initialize app
         showSection('home');
         initializeApp();
+        // Show sidebar and user info
         showSidebar();
+        // Show success message
         document.getElementById('loginMessage').textContent = t.loginSuccess;
         document.getElementById('loginMessage').style.color = '#48bb78';
-        // Clear form
+        // Clear form fields
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
     } else {
+        // Show error for invalid credentials
         document.getElementById('loginMessage').textContent = t.loginErrorInvalid;
         document.getElementById('loginMessage').style.color = '#e53e3e';
     }
 }
 
+// Handle user registration
 function register() {
+    // Get registration form values
     const username = document.getElementById('regUsername').value.trim();
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
 
+    // Get translated messages
     const t = translations[getCurrentLanguage()] || translations.sv;
+    
+    // Validate all fields are filled
     if (!username || !password || !confirmPassword) {
         document.getElementById('registerMessage').textContent = t.registerErrorFields;
         document.getElementById('registerMessage').style.color = '#e53e3e';
         return;
     }
 
+    // Check if passwords match
     if (password !== confirmPassword) {
         document.getElementById('registerMessage').textContent = t.registerErrorMatch;
         document.getElementById('registerMessage').style.color = '#e53e3e';
         return;
     }
 
+    // Check password length requirement
     if (password.length < 4) {
         document.getElementById('registerMessage').textContent = t.registerErrorShortPass;
         document.getElementById('registerMessage').style.color = '#e53e3e';
         return;
     }
 
+    // Get all existing users
     const users = JSON.parse(localStorage.getItem('users') || '{}');
+    // Check if username already exists
     if (users[username]) {
         document.getElementById('registerMessage').textContent = t.registerErrorUserExists;
         document.getElementById('registerMessage').style.color = '#e53e3e';
     } else {
+        // Create new user account with password and creation date
         users[username] = { password, created: new Date().toISOString() };
         localStorage.setItem('users', JSON.stringify(users));
+        // Log in the newly registered user
         currentUser = username;
         localStorage.setItem('currentUser', currentUser);
         showSection('home');
@@ -726,18 +838,23 @@ function register() {
         showSidebar();
         document.getElementById('registerMessage').textContent = t.registerSuccess;
         document.getElementById('registerMessage').style.color = '#48bb78';
-        // Clear form
+        // Clear form fields
         document.getElementById('regUsername').value = '';
         document.getElementById('regPassword').value = '';
         document.getElementById('regConfirmPassword').value = '';
     }
 }
 
+// Log out the current user
 function logout() {
+    // Clear current user
     currentUser = null;
+    // Remove from storage
     localStorage.removeItem('currentUser');
+    // Hide user info display
     document.getElementById('userInfo').classList.add('hidden');
     document.getElementById('userDisplay').textContent = '';
+    // Return to login screen
     showSection('login');
     hideSidebar();
 }
@@ -787,30 +904,46 @@ function deleteAccount() {
     hideSidebar();
 }
 
-// Goals
+// ==================== GOALS SECTION ====================
+
+// Add a new goal to the user's goal list
 function addGoal() {
+    // Get the goal text from the input field
     const input = document.getElementById('goalInput');
     const goal = input.value.trim();
     if (goal) {
+        // Retrieve existing goals from storage
         const goals = getUserData('goals', []);
+        // Add new goal object with text, completed status, and creation date
         goals.push({ text: goal, completed: false, created: new Date().toISOString() });
+        // Save updated goals to storage
         setUserData('goals', goals);
+        // Clear the input field
         input.value = '';
+        // Refresh the goals display
         loadGoals();
+        // Update home page statistics
         updateOverview();
+        // Update stats charts
         loadStats();
     }
 }
 
+// Load and display all user goals with complete/edit/delete buttons
 function loadGoals() {
+    // Get the goals list container and empty state element
     const goalsList = document.getElementById('goalsList');
     const goalsEmpty = document.getElementById('goalsEmpty');
+    // Clear the list before reloading
     goalsList.innerHTML = '';
+    // Retrieve all user goals from storage
     const goals = getUserData('goals', []);
+    // Show empty state message if user has no goals
     if (goals.length === 0) {
         goalsEmpty.classList.remove('hidden');
     } else {
         goalsEmpty.classList.add('hidden');
+        // Display each goal with checkbox, edit, and delete buttons
         goals.forEach((goal, index) => {
             const div = document.createElement('div');
             div.className = 'goal' + (goal.completed ? ' completed' : '');
@@ -829,21 +962,33 @@ function loadGoals() {
     }
 }
 
+// Toggle goal completion status
 function toggleGoal(index) {
+    // Get all goals from storage
     const goals = getUserData('goals', []);
+    // Toggle the completed status of the goal at the given index
     goals[index].completed = !goals[index].completed;
+    // Save the updated goal status
     setUserData('goals', goals);
+    // Refresh the goals display
     loadGoals();
+    // Update overview statistics
     updateOverview();
+    // Update statistics charts
     loadStats();
+    // Award XP points if goal is completed
     if (goals[index].completed) {
         addXP(20);
     }
 }
 
+// Edit an existing goal text
 function editGoal(index) {
+    // Get all goals from storage
     const goals = getUserData('goals', []);
+    // Prompt user to edit the goal text
     const newText = prompt('Edit goal:', goals[index].text);
+    // Update the goal if user didn't cancel and entered text
     if (newText && newText.trim()) {
         goals[index].text = newText.trim();
         setUserData('goals', goals);
@@ -851,16 +996,24 @@ function editGoal(index) {
     }
 }
 
+// Delete a goal from the user's list
 function deleteGoal(index) {
+    // Get all goals from storage
     const goals = getUserData('goals', []);
+    // Remove the goal at the specified index
     goals.splice(index, 1);
+    // Save the updated goals list
     setUserData('goals', goals);
+    // Refresh the goals display
     loadGoals();
+    // Update statistics
     updateOverview();
     loadStats();
 }
 
-// Bad Habits
+// ==================== BAD HABITS SECTION ====================
+
+// Add a new bad habit to track and break
 function addHabit() {
     const input = document.getElementById('habitInput');
     const habit = input.value.trim();
@@ -901,23 +1054,36 @@ function loadHabits() {
     }
 }
 
+// Mark a bad habit as checked for today to increment the streak
 function checkHabit(index) {
+    // Get all habits from storage
     const habits = getUserData('habits', []);
+    // Get today's date as a string
     const today = new Date().toDateString();
+    // Only increment streak if habit wasn't already checked today
     if (habits[index].lastChecked !== today) {
+        // Increase the streak counter
         habits[index].streak++;
+        // Update the last check date
         habits[index].lastChecked = today;
+        // Save changes to storage
         setUserData('habits', habits);
+        // Refresh display
         loadHabits();
         updateOverview();
         loadStats();
+        // Award XP points for breaking the habit
         addXP(10);
     }
 }
 
+// Edit a habit name
 function editHabit(index) {
+    // Get all habits
     const habits = getUserData('habits', []);
+    // Prompt user to enter new habit name
     const newName = prompt('Edit habit:', habits[index].name);
+    // Update if user provided new text
     if (newName && newName.trim()) {
         habits[index].name = newName.trim();
         setUserData('habits', habits);
@@ -925,16 +1091,23 @@ function editHabit(index) {
     }
 }
 
+// Remove a habit from tracking
 function removeHabit(index) {
+    // Get all habits
     const habits = getUserData('habits', []);
+    // Remove the habit at the specified index
     habits.splice(index, 1);
+    // Save changes
     setUserData('habits', habits);
+    // Refresh display and statistics
     loadHabits();
     updateOverview();
     loadStats();
 }
 
-// Strategies
+// ==================== STRATEGIES SECTION ====================
+
+// Load and display self-improvement strategies
 function loadStrategies() {
     const strategies = [
         { title: 'Sätt mål som följer SMMRT principen', description: 'skapa mål som är Specifika, Mätbara, möjliga, Relevanta, och Tidsbundna.' },
@@ -953,7 +1126,9 @@ function loadStrategies() {
     });
 }
 
-// Programs
+// ==================== PROGRAMS/ROUTINES SECTION ====================
+
+// Join an existing program/routine
 function joinProgram(programName) {
     const programs = getUserData('activePrograms', []);
     if (!programs.find(p => p.name === programName)) {
@@ -1048,7 +1223,9 @@ function completeDay(index) {
     }
 }
 
-// Statistics
+// ==================== STATISTICS SECTION ====================
+
+// Load and display statistics using Chart.js
 function loadStats() {
     const goals = getUserData('goals', []);
     const habits = getUserData('habits', []);
@@ -1101,83 +1278,122 @@ function loadStats() {
     });
 }
 
-// Notifications
+// ==================== NOTIFICATIONS ====================
+
+// Schedule daily reminder notifications for the user
 function scheduleNotifications() {
+    // Only schedule if notifications are supported and permitted
     if ('Notification' in window && Notification.permission === 'granted') {
-        // Schedule daily reminder at 8 PM
+        // Get current time
         const now = new Date();
+        // Set reminder time to 8 PM (20:00)
         const reminderTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0);
+        // If 8 PM already passed today, schedule for tomorrow
         if (reminderTime < now) {
             reminderTime.setDate(reminderTime.getDate() + 1);
         }
+        // Calculate milliseconds until next reminder
         const timeUntilReminder = reminderTime - now;
+        // Schedule the first notification
         setTimeout(() => {
+            // Show the notification
             showNotification('Don\'t forget your goals today!');
-            // Repeat daily
+            // Schedule repeat daily (24 hours = 86400000 milliseconds)
             setInterval(() => showNotification('Don\'t forget your goals today!'), 24 * 60 * 60 * 1000);
         }, timeUntilReminder);
     }
 }
 
+// Show a browser notification to the user
 function showNotification(message) {
+    // Only show if notifications are supported and permitted
     if ('Notification' in window && Notification.permission === 'granted') {
+        // Create and display the notification
         new Notification('Self-Improvement Hub', {
             body: message,
-            icon: '/favicon.ico' // Add an icon if available
+            icon: '/favicon.ico' // Add app icon if available
         });
     }
 }
 
-// Utility functions
+// ==================== UTILITY FUNCTIONS ====================
+
+// Get user data from browser storage using a key
 function getUserData(key, defaultValue) {
+    // Retrieve all user data as JSON object
     const userData = JSON.parse(localStorage.getItem(`user_${currentUser}`) || '{}');
+    // Return the value for the key, or default if not found
     return userData[key] || defaultValue;
 }
 
+// Save user data to browser storage
 function setUserData(key, value) {
+    // Retrieve all existing user data
     const userData = JSON.parse(localStorage.getItem(`user_${currentUser}`) || '{}');
+    // Update with new value
     userData[key] = value;
+    // Save back to storage
     localStorage.setItem(`user_${currentUser}`, JSON.stringify(userData));
 }
 
+// Update user's display with name and level info
 function updateUserDisplay() {
+    // Get current language for translations
     const lang = getCurrentLanguage();
     const t = translations[lang] || translations.sv;
+    
+    // Hide user info if not logged in
     if (!currentUser) {
         document.getElementById('userInfo').classList.add('hidden');
         document.getElementById('userDisplay').textContent = '';
         return;
     }
+    
+    // Show user info display
     document.getElementById('userInfo').classList.remove('hidden');
+    // Display welcome message with username
     document.getElementById('userDisplay').textContent = t.welcomeUser.replace('{user}', currentUser);
+    
+    // Get user's XP and calculate level
     const xp = getUserData('xp', 0);
     const level = Math.floor(xp / 100) + 1;
+    // Display level and XP
     document.getElementById('levelDisplay').textContent = t.levelDisplay
         ? t.levelDisplay.replace('{level}', level).replace('{xp}', xp)
         : `Level ${level} - ${xp} XP`;
 }
 
+// ==================== ACHIEVEMENTS & XP ====================
+
+// Add XP points to the user's total
 function addXP(points) {
+    // Get current XP from storage
     const currentXP = getUserData('xp', 0);
+    // Add new points
     setUserData('xp', currentXP + points);
+    // Update the user display with new level/XP
     updateUserDisplay();
+    // Check if user earned any new achievements
     checkAchievements();
 }
 
+// Check and unlock achievements based on user progress
 function checkAchievements() {
+    // Get list of achievements user has unlocked
     const achievements = getUserData('achievements', []);
+    // Get user's current data
     const goals = getUserData('goals', []);
     const habits = getUserData('habits', []);
     const xp = getUserData('xp', 0);
 
-    // First Goal Achievement
+    // Achievement: First Goal - unlock when user creates their first goal
     if (goals.length >= 1 && !achievements.includes('firstGoal')) {
         achievements.push('firstGoal');
         addXP(50);
         showNotification('Achievement Unlocked: First Goal!');
     }
 
-    // Goal Master (5 completed goals)
+    // Achievement: Goal Master - unlock when user completes 5 goals
     const completedGoals = goals.filter(g => g.completed).length;
     if (completedGoals >= 5 && !achievements.includes('goalMaster')) {
         achievements.push('goalMaster');
@@ -1185,7 +1401,7 @@ function checkAchievements() {
         showNotification('Achievement Unlocked: Goal Master!');
     }
 
-    // Habit Breaker (3 habits with streak >=7)
+    // Achievement: Habit Breaker - unlock when 3 habits have 7+ day streaks
     const longStreaks = habits.filter(h => h.streak >= 7).length;
     if (longStreaks >= 3 && !achievements.includes('habitBreaker')) {
         achievements.push('habitBreaker');
@@ -1193,7 +1409,7 @@ function checkAchievements() {
         showNotification('Achievement Unlocked: Habit Breaker!');
     }
 
-    // Level Up badges
+    // Level badges - unlock a badge for each level reached
     const level = Math.floor(xp / 100) + 1;
     for (let i = 1; i <= level; i++) {
         if (!achievements.includes(`level${i}`)) {
@@ -1201,14 +1417,21 @@ function checkAchievements() {
         }
     }
 
+    // Save achievements to storage
     setUserData('achievements', achievements);
+    // Refresh achievements display
     loadAchievements();
 }
 
+// ==================== CHALLENGES ====================
+
+// Generate AI-suggested goal based on category selected
 function generateGoal() {
+    // Get the selected goal category
     const category = document.getElementById('goalCategory').value;
     if (!category) return;
 
+    // Define goal templates for each category
     const goalTemplates = {
         health: [
             "Exercise for 30 minutes, 4 times per week",
@@ -1247,20 +1470,31 @@ function generateGoal() {
         ]
     };
 
+    // Pick a random goal from the templates for selected category
     const templates = goalTemplates[category];
     const randomGoal = templates[Math.floor(Math.random() * templates.length)];
+    // Display the generated goal
     document.getElementById('generatedGoal').textContent = randomGoal;
+    // Show the button to add this goal
     document.getElementById('addGeneratedGoalBtn').classList.remove('hidden');
 }
 
+// Add the AI-generated goal to user's goal list
 function addGeneratedGoal() {
+    // Get the generated goal text
     const goalText = document.getElementById('generatedGoal').textContent;
     if (goalText) {
+        // Retrieve goals from storage
         const goals = getUserData('goals', []);
+        // Add the generated goal to the list
         goals.push({ text: goalText, completed: false, created: new Date().toISOString() });
+        // Save goals
         setUserData('goals', goals);
+        // Clear the generated goal display
         document.getElementById('generatedGoal').textContent = '';
+        // Hide the add button
         document.getElementById('addGeneratedGoalBtn').classList.add('hidden');
+        // Refresh display and award XP
         loadGoals();
         updateOverview();
         loadStats();
@@ -1268,12 +1502,19 @@ function addGeneratedGoal() {
     }
 }
 
+// Join a pre-made challenge
 function joinChallenge(challengeName) {
+    // Get active challenges from storage
     const challenges = getUserData('activeChallenges', []);
+    // Check if user hasn't already joined this challenge
     if (!challenges.find(c => c.name === challengeName)) {
+        // Get challenge data
         const challengeData = getChallengeData(challengeName);
+        // Add challenge with current date and progress
         challenges.push({ ...challengeData, startDate: new Date().toISOString(), progress: 0 });
+        // Save challenges
         setUserData('activeChallenges', challenges);
+        // Refresh display and award XP
         loadChallenges();
         updateOverview();
         addXP(25);
@@ -1328,14 +1569,24 @@ function completeChallengeDay(index) {
     }
 }
 
+// ==================== DAILY REFLECTIONS ====================
+
+// Save daily reflection with rating and challenges faced
 function saveReflection() {
+    // Get reflection text from textarea
     const reflection = document.getElementById('reflectionText').value;
+    // Get day rating (1-10)
     const rating = document.getElementById('dayRating').value;
+    // Check if user worked on goals today
     const goalsWorked = document.getElementById('goalsWorked').checked;
+    // Get challenges faced during the day
     const challenges = document.getElementById('challengesFaced').value;
 
+    // Save only if reflection text is not empty
     if (reflection.trim()) {
+        // Get existing reflections from storage
         const reflections = getUserData('reflections', []);
+        // Add new reflection with timestamp
         reflections.push({
             date: new Date().toISOString(),
             text: reflection,
@@ -1440,13 +1691,18 @@ function loadWeeklyReflections() {
     });
 }
 
+// Load and display earned achievements and badges
 function loadAchievements() {
+    // Get containers for badges and recent achievements
     const badgesContainer = document.getElementById('badgesContainer');
     const recentDiv = document.getElementById('recentAchievements');
+    // Clear containers
     badgesContainer.innerHTML = '';
     recentDiv.innerHTML = '<h3>Recent Achievements</h3>';
 
+    // Get list of achievements user has earned
     const achievements = getUserData('achievements', []);
+    // Define all possible badges with their properties
     const allBadges = [
         { id: 'firstGoal', name: 'First Goal', description: 'Created your first goal', icon: '🎯' },
         { id: 'goalMaster', name: 'Goal Master', description: 'Completed 5 goals', icon: '🏆' },
@@ -1456,18 +1712,21 @@ function loadAchievements() {
         { id: 'level3', name: 'Level 3', description: 'Reached level 3', icon: '⭐⭐⭐' }
     ];
 
+    // Display all badges, unlocked or locked
     allBadges.forEach(badge => {
         const div = document.createElement('div');
+        // Add 'locked' class if badge not earned
         div.className = 'badge' + (achievements.includes(badge.id) ? '' : ' locked');
         div.innerHTML = `
             <div>${badge.icon}</div>
             <div>${badge.name}</div>
         `;
+        // Set tooltip description
         div.title = badge.description;
         badgesContainer.appendChild(div);
     });
 
-    // Recent achievements (last 3)
+    // Display recent 3 achievements in detail
     achievements.slice(-3).reverse().forEach(achievementId => {
         const badge = allBadges.find(b => b.id === achievementId);
         if (badge) {
@@ -1479,14 +1738,18 @@ function loadAchievements() {
     });
 }
 
+// Update the home page overview with current user statistics
 function updateOverview() {
+    // Get the overview statistics container
     const stats = document.getElementById('progressStats');
+    // Retrieve all user data
     const goals = getUserData('goals', []);
     const habits = getUserData('habits', []);
     const programs = getUserData('activePrograms', []);
     const challenges = getUserData('activeChallenges', []);
     const xp = getUserData('xp', 0);
     const level = Math.floor(xp / 100) + 1;
+    // Display overview statistics
     stats.innerHTML = `
         <p>Level: ${level} (${xp} XP)</p>
         <p>Mål avklarade: ${goals.filter(g => g.completed).length}/${goals.length}</p>
