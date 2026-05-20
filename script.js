@@ -1506,6 +1506,7 @@ function addGeneratedGoal() {
 function joinChallenge(challengeName) {
     // Get active challenges from storage
     const challenges = getUserData('activeChallenges', []);
+    const completedEarly = getUserData('completedChallenges', []);
     // Check if user hasn't already joined this challenge
     if (!challenges.find(c => c.name === challengeName)) {
         // Get challenge data
@@ -1549,9 +1550,53 @@ function loadChallenges() {
                 <span>${progress}/${challenge.duration} days</span>
             </div>
             <button onclick="completeChallengeDay(${index})">Mark Day Complete</button>
+            <button onclick="endChallenge(${index})" style="margin-left:8px;background:#e53e3e;color:#fff;border:none;padding:6px 8px;border-radius:4px;">Avsluta utmaning</button>
         `;
         activeChallengesDiv.appendChild(div);
     });
+}
+
+// End (leave) an active challenge early. Awards partial XP based on progress and
+// moves the challenge to `completedChallenges` with an `endedEarly` flag.
+function endChallenge(index) {
+    const challenges = getUserData('activeChallenges', []);
+    if (!challenges[index]) return;
+
+    const challenge = challenges[index];
+    const days = Math.floor((new Date() - new Date(challenge.startDate)) / (1000 * 60 * 60 * 24)) + 1;
+    const progress = Math.min(days, challenge.duration);
+
+    // Confirm with the user before ending early
+    const lang = getCurrentLanguage();
+    const confirmText = lang === 'sv'
+        ? `Vill du avsluta utmaningen "${challenge.name}" tidigt? Framsteg: ${progress}/${challenge.duration} dagar.`
+        : `End challenge "${challenge.name}" early? Progress: ${progress}/${challenge.duration} days.`;
+    if (!confirm(confirmText)) return;
+
+    // Remove from active list
+    challenges.splice(index, 1);
+    setUserData('activeChallenges', challenges);
+
+    // Save into completedChallenges with endedEarly flag
+    const completed = getUserData('completedChallenges', []);
+    completed.push({
+        name: challenge.name,
+        description: challenge.description,
+        duration: challenge.duration,
+        progress: progress,
+        startDate: challenge.startDate,
+        endDate: new Date().toISOString(),
+        endedEarly: true
+    });
+    setUserData('completedChallenges', completed);
+
+    // Award partial XP proportional to progress (max 50 for partial completion)
+    const partialXP = Math.floor((progress / challenge.duration) * 50);
+    if (partialXP > 0) addXP(partialXP);
+
+    loadChallenges();
+    updateOverview();
+    showNotification(`${challenge.name} avslutad.`);
 }
 
 function completeChallengeDay(index) {
@@ -1757,6 +1802,6 @@ function updateOverview() {
         <p>Aktiva program: ${programs.length}</p>
         <p>Aktiva utmaningar: ${challenges.length}</p>
         <p>Program avklarade: ${programs.filter(p => p.progress >= p.duration).length}</p>
-        <p>Utmaningar avklarade: ${challenges.filter(c => c.progress >= c.duration).length}</p>
+        <p>Utmaningar avklarade: ${challenges.filter(c => c.progress >= c.duration).length + completedEarly.length}</p>
     `;
 }
