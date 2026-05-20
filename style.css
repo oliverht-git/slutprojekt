@@ -1019,6 +1019,28 @@ input, textarea, button {
     opacity: 0.9;
 }
 
+.home-highlights {
+    margin-bottom: 1.5rem;
+}
+
+.home-highlights .highlight-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    padding: 1rem 1.2rem;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.08);
+}
+
+.home-highlights .highlight-card h3 {
+    margin: 0 0 0.5rem;
+    color: #333;
+}
+
+.home-highlights .highlight-card p {
+    margin: 0;
+    color: #555;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .app-container {

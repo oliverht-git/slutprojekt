@@ -432,6 +432,8 @@ function initializeApp() {
     updateUserDisplay();
     // Set up scheduled notifications for reminders
     scheduleNotifications();
+    // Update home highlights for completed challenges/programs
+    loadHomeHighlights();
 }
 
 // ==================== SIDEBAR & NAVIGATION ====================
@@ -1227,9 +1229,15 @@ function completeDay(index) {
     if (!programs[index]) return;
     if (programs[index].progress < programs[index].duration) {
         programs[index].progress++;
-        const programName = programs[index].name;
-        if (programs[index].progress === programs[index].duration) {
-            // Remove program completely when finished
+        const program = programs[index];
+        const programName = program.name;
+        if (program.progress === program.duration) {
+            const completed = getUserData('completedPrograms', []);
+            completed.push({
+                ...program,
+                completedDate: new Date().toISOString()
+            });
+            setUserData('completedPrograms', completed);
             programs.splice(index, 1);
             showNotification(`Program Completed: ${programName}!`);
         }
@@ -1619,9 +1627,17 @@ function completeChallengeDay(index) {
     if (!challenges[index]) return;
     if (challenges[index].progress < challenges[index].duration) {
         challenges[index].progress++;
-        const challengeName = challenges[index].name;
-        if (challenges[index].progress === challenges[index].duration) {
-            // Remove challenge completely when finished
+        const challenge = challenges[index];
+        const challengeName = challenge.name;
+        if (challenge.progress === challenge.duration) {
+            // Store finished challenge so home can mark it as complete
+            const completed = getUserData('completedChallenges', []);
+            completed.push({
+                ...challenge,
+                completedDate: new Date().toISOString(),
+                endedEarly: false
+            });
+            setUserData('completedChallenges', completed);
             challenges.splice(index, 1);
             showNotification(`Challenge Completed: ${challengeName}!`);
         }
@@ -1809,9 +1825,10 @@ function updateOverview() {
     const habits = getUserData('habits', []);
     const programs = getUserData('activePrograms', []);
     const challenges = getUserData('activeChallenges', []);
+    const completedPrograms = getUserData('completedPrograms', []);
+    const completedChallenges = getUserData('completedChallenges', []);
     const xp = getUserData('xp', 0);
     const level = Math.floor(xp / 100) + 1;
-    const completedEarly = getUserData('completedChallenges', []);
     // Display overview statistics
     stats.innerHTML = `
         <p>Level: ${level} (${xp} XP)</p>
@@ -1819,9 +1836,36 @@ function updateOverview() {
         <p>Vanor som kontrolleras: ${habits.length}</p>
         <p>Aktiva program: ${programs.length}</p>
         <p>Aktiva utmaningar: ${challenges.length}</p>
-        <p>Program avklarade: ${programs.filter(p => p.progress >= p.duration).length}</p>
-        <p>Utmaningar avklarade: ${challenges.filter(c => c.progress >= c.duration).length + completedEarly.length}</p>
+        <p>Program avklarade: ${completedPrograms.length}</p>
+        <p>Utmaningar avklarade: ${completedChallenges.length}</p>
     `;
+    loadHomeHighlights();
+}
+
+function loadHomeHighlights() {
+    const container = document.getElementById('homeHighlights');
+    if (!container) return;
+    const completedChallenges = getUserData('completedChallenges', []);
+    const completedPrograms = getUserData('completedPrograms', []);
+    let messages = [];
+    if (completedChallenges.length > 0) {
+        messages.push(`Du har ${completedChallenges.length} avklarade utmaningar.`);
+    }
+    if (completedPrograms.length > 0) {
+        messages.push(`Du har ${completedPrograms.length} avklarade program.`);
+    }
+    if (messages.length > 0) {
+        container.classList.remove('hidden');
+        container.innerHTML = `
+            <div class="highlight-card">
+                <h3>Färdiga saker</h3>
+                <p>${messages.join(' ')}</p>
+            </div>
+        `;
+    } else {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+    }
 }
 
 // ==================== STUDY TIMER (Pomodoro) ====================
@@ -2029,6 +2073,7 @@ function ensureUserData(username) {
         activePrograms: [],
         activeChallenges: [],
         completedChallenges: [],
+        completedPrograms: [],
         reflections: [],
         weeklyReflections: [],
         achievements: [],
