@@ -16,6 +16,15 @@
 // Current logged-in user (null if not logged in)
 let currentUser = null;
 
+// Study timer state
+let studyTimerInterval = null;
+let studyRemaining = 25 * 60; // seconds
+let studyRunning = false;
+let studyMode = 'focus'; // 'focus' or 'break'
+// Chart instances
+let goalsChartInstance = null;
+let habitsChartInstance = null;
+
 // Object containing all UI text translations for Swedish (sv) and English (en)
 // Each language has keys for all buttons, labels, messages, and content
 const translations = {
@@ -399,6 +408,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Initialize the app by loading all user data after login
 function initializeApp() {
+    // Ensure user storage structure exists
+    ensureUserData(currentUser);
     // Load all user's goals and display them
     loadGoals();
     // Load all user's bad habits and their streaks
@@ -771,6 +782,8 @@ function login() {
         currentUser = username;
         // Save to storage
         localStorage.setItem('currentUser', currentUser);
+        // Ensure user data exists (for new users)
+        ensureUserData(currentUser);
         // Navigate to home and initialize app
         showSection('home');
         initializeApp();
@@ -833,6 +846,8 @@ function register() {
         // Log in the newly registered user
         currentUser = username;
         localStorage.setItem('currentUser', currentUser);
+        // Ensure user storage defaults exist
+        ensureUserData(currentUser);
         showSection('home');
         initializeApp();
         showSidebar();
@@ -1190,8 +1205,8 @@ function loadPrograms() {
     programs.forEach((program, index) => {
         const div = document.createElement('div');
         div.className = 'activeProgram';
-        const days = Math.floor((new Date() - new Date(program.startDate)) / (1000 * 60 * 60 * 24)) + 1;
-        const progress = Math.min(days, program.duration);
+        // Use stored progress if available, otherwise calculate from time
+        const progress = program.progress !== undefined ? program.progress : Math.floor((new Date() - new Date(program.startDate)) / (1000 * 60 * 60 * 24)) + 1;
         div.innerHTML = `
             <h4>${program.name}</h4>
             <p>${program.description || ''}</p>
@@ -1209,17 +1224,19 @@ function loadPrograms() {
 
 function completeDay(index) {
     const programs = getUserData('activePrograms', []);
+    if (!programs[index]) return;
     if (programs[index].progress < programs[index].duration) {
         programs[index].progress++;
+        const programName = programs[index].name;
+        if (programs[index].progress === programs[index].duration) {
+            // Remove program completely when finished
+            programs.splice(index, 1);
+            showNotification(`Program Completed: ${programName}!`);
+        }
         setUserData('activePrograms', programs);
         loadPrograms();
         updateOverview();
         loadStats();
-        addXP(5);
-        if (programs[index].progress === programs[index].duration) {
-            addXP(50); // Bonus for completing program
-            showNotification(`Program Completed: ${programs[index].name}!`);
-        }
     }
 }
 
@@ -1233,7 +1250,8 @@ function loadStats() {
 
     // Goals chart
     const goalsCtx = document.getElementById('goalsChart').getContext('2d');
-    new Chart(goalsCtx, {
+    if (goalsChartInstance) goalsChartInstance.destroy();
+    goalsChartInstance = new Chart(goalsCtx, {
         type: 'pie',
         data: {
             labels: ['Completed', 'Pending'],
@@ -1253,7 +1271,8 @@ function loadStats() {
 
     // Habits chart
     const habitsCtx = document.getElementById('habitsChart').getContext('2d');
-    new Chart(habitsCtx, {
+    if (habitsChartInstance) habitsChartInstance.destroy();
+    habitsChartInstance = new Chart(habitsCtx, {
         type: 'bar',
         data: {
             labels: habits.map(h => h.name),
@@ -1506,7 +1525,6 @@ function addGeneratedGoal() {
 function joinChallenge(challengeName) {
     // Get active challenges from storage
     const challenges = getUserData('activeChallenges', []);
-    const completedEarly = getUserData('completedChallenges', []);
     // Check if user hasn't already joined this challenge
     if (!challenges.find(c => c.name === challengeName)) {
         // Get challenge data
@@ -1527,6 +1545,7 @@ function getChallengeData(name) {
         noSugar: { name: '30 Days No Sugar', duration: 30, description: 'Eliminate all added sugars' },
         earlyBird: { name: 'Early Bird Challenge', duration: 21, description: 'Wake up at 6 AM every day' },
         gratitude: { name: 'Gratitude Journal', duration: 30, description: 'Write 3 things you\'re grateful for daily' }
+        ,earlysleep: { name: 'Earlier Evenings', duration: 21, description: 'Reduce screen time before bed and go to sleep earlier' }
     };
     return challenges[name];
 }
@@ -1538,8 +1557,8 @@ function loadChallenges() {
     challenges.forEach((challenge, index) => {
         const div = document.createElement('div');
         div.className = 'activeProgram';
-        const days = Math.floor((new Date() - new Date(challenge.startDate)) / (1000 * 60 * 60 * 24)) + 1;
-        const progress = Math.min(days, challenge.duration);
+        // Use stored progress if available, otherwise calculate from time
+        const progress = challenge.progress !== undefined ? challenge.progress : Math.floor((new Date() - new Date(challenge.startDate)) / (1000 * 60 * 60 * 24)) + 1;
         div.innerHTML = `
             <h4>${challenge.name}</h4>
             <p>${challenge.description}</p>
@@ -1590,10 +1609,6 @@ function endChallenge(index) {
     });
     setUserData('completedChallenges', completed);
 
-    // Award partial XP proportional to progress (max 50 for partial completion)
-    const partialXP = Math.floor((progress / challenge.duration) * 50);
-    if (partialXP > 0) addXP(partialXP);
-
     loadChallenges();
     updateOverview();
     showNotification(`${challenge.name} avslutad.`);
@@ -1601,16 +1616,18 @@ function endChallenge(index) {
 
 function completeChallengeDay(index) {
     const challenges = getUserData('activeChallenges', []);
+    if (!challenges[index]) return;
     if (challenges[index].progress < challenges[index].duration) {
         challenges[index].progress++;
+        const challengeName = challenges[index].name;
+        if (challenges[index].progress === challenges[index].duration) {
+            // Remove challenge completely when finished
+            challenges.splice(index, 1);
+            showNotification(`Challenge Completed: ${challengeName}!`);
+        }
         setUserData('activeChallenges', challenges);
         loadChallenges();
         updateOverview();
-        addXP(5);
-        if (challenges[index].progress === challenges[index].duration) {
-            addXP(100); // Bonus for completing challenge
-            showNotification(`Challenge Completed: ${challenges[index].name}!`);
-        }
     }
 }
 
@@ -1794,6 +1811,7 @@ function updateOverview() {
     const challenges = getUserData('activeChallenges', []);
     const xp = getUserData('xp', 0);
     const level = Math.floor(xp / 100) + 1;
+    const completedEarly = getUserData('completedChallenges', []);
     // Display overview statistics
     stats.innerHTML = `
         <p>Level: ${level} (${xp} XP)</p>
@@ -1804,4 +1822,220 @@ function updateOverview() {
         <p>Program avklarade: ${programs.filter(p => p.progress >= p.duration).length}</p>
         <p>Utmaningar avklarade: ${challenges.filter(c => c.progress >= c.duration).length + completedEarly.length}</p>
     `;
+}
+
+// ==================== STUDY TIMER (Pomodoro) ====================
+
+function formatTime(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+function updateTimerUI() {
+    document.getElementById('timerDisplay').textContent = formatTime(studyRemaining);
+    document.getElementById('timerMode').textContent = studyMode === 'focus' ? (getCurrentLanguage() === 'sv' ? 'Fokustid' : 'Focus') : (getCurrentLanguage() === 'sv' ? 'Paus' : 'Break');
+}
+
+function startStudyTimer() {
+    if (studyRunning) return;
+    studyRunning = true;
+    // Default durations
+    const focusDuration = 25 * 60;
+    const breakDuration = 5 * 60;
+    // If timer was reset or finished, ensure remaining is set
+    if (!studyRemaining || studyRemaining <= 0) {
+        studyRemaining = studyMode === 'focus' ? focusDuration : breakDuration;
+    }
+    // Toggle buttons
+    document.getElementById('startTimerBtn').classList.add('hidden');
+    document.getElementById('pauseTimerBtn').classList.remove('hidden');
+
+    studyTimerInterval = setInterval(() => {
+        studyRemaining--;
+        if (studyRemaining <= 0) {
+            // End of period: switch mode
+            clearInterval(studyTimerInterval);
+            studyRunning = false;
+            // Award XP for completed focus period
+            if (studyMode === 'focus') addXP(5);
+            studyMode = studyMode === 'focus' ? 'break' : 'focus';
+            studyRemaining = studyMode === 'focus' ? focusDuration : breakDuration;
+            updateTimerUI();
+            // Auto-start next period
+            startStudyTimer();
+        } else {
+            updateTimerUI();
+        }
+    }, 1000);
+    updateTimerUI();
+}
+
+function pauseStudyTimer() {
+    if (!studyRunning) return;
+    studyRunning = false;
+    clearInterval(studyTimerInterval);
+    studyTimerInterval = null;
+    document.getElementById('startTimerBtn').classList.remove('hidden');
+    document.getElementById('pauseTimerBtn').classList.add('hidden');
+}
+
+function resetStudyTimer() {
+    pauseStudyTimer();
+    studyMode = 'focus';
+    studyRemaining = 25 * 60;
+    updateTimerUI();
+}
+
+// ==================== STUDY/NOTE FUNCTIONS ====================
+
+function addSubject() {
+    const input = document.getElementById('subjectInput');
+    const name = input.value.trim();
+    if (!name) return;
+    const subjects = getUserData('subjects', []);
+    subjects.push({ name });
+    setUserData('subjects', subjects);
+    input.value = '';
+    loadSubjects();
+}
+
+function loadSubjects() {
+    const subjects = getUserData('subjects', []);
+    const list = document.getElementById('subjectsList');
+    const goalSelect = document.getElementById('goalSubjectSelect');
+    const noteSelect = document.getElementById('noteSubjectSelect');
+    if (list) list.innerHTML = '';
+    if (goalSelect) {
+        goalSelect.innerHTML = '<option value="">Välj ämne</option>';
+    }
+    if (noteSelect) {
+        noteSelect.innerHTML = '<option value="">Välj ämne</option>';
+    }
+    subjects.forEach((s, i) => {
+        if (list) {
+            const div = document.createElement('div');
+            div.textContent = s.name;
+            list.appendChild(div);
+        }
+        if (goalSelect) {
+            const opt = document.createElement('option');
+            opt.value = s.name;
+            opt.textContent = s.name;
+            goalSelect.appendChild(opt);
+        }
+        if (noteSelect) {
+            const opt2 = document.createElement('option');
+            opt2.value = s.name;
+            opt2.textContent = s.name;
+            noteSelect.appendChild(opt2);
+        }
+    });
+}
+
+function addStudyGoal() {
+    const subject = document.getElementById('goalSubjectSelect').value;
+    const text = document.getElementById('studyGoalInput').value.trim();
+    if (!text) return;
+    const goals = getUserData('studyGoals', []);
+    goals.push({ subject, text, created: new Date().toISOString(), completed: false });
+    setUserData('studyGoals', goals);
+    document.getElementById('studyGoalInput').value = '';
+    loadStudyGoals();
+}
+
+function loadStudyGoals() {
+    const list = document.getElementById('studyGoalsList');
+    list.innerHTML = '';
+    const goals = getUserData('studyGoals', []);
+    goals.forEach((g, i) => {
+        const div = document.createElement('div');
+        div.className = 'study-goal';
+        div.innerHTML = `${g.subject ? `<strong>${g.subject}</strong>: ` : ''}${g.text} <button onclick="removeStudyGoal(${i})">Remove</button>`;
+        list.appendChild(div);
+    });
+}
+
+function removeStudyGoal(index) {
+    const goals = getUserData('studyGoals', []);
+    goals.splice(index, 1);
+    setUserData('studyGoals', goals);
+    loadStudyGoals();
+}
+
+function addReminder() {
+    const text = document.getElementById('reminderInput').value.trim();
+    const time = document.getElementById('reminderTime').value;
+    if (!text) return;
+    const reminders = getUserData('reminders', []);
+    reminders.push({ text, time, created: new Date().toISOString() });
+    setUserData('reminders', reminders);
+    document.getElementById('reminderInput').value = '';
+    document.getElementById('reminderTime').value = '';
+    loadReminders();
+}
+
+function loadReminders() {
+    const list = document.getElementById('remindersList');
+    list.innerHTML = '';
+    const reminders = getUserData('reminders', []);
+    reminders.forEach((r, i) => {
+        const div = document.createElement('div');
+        div.innerHTML = `${r.text} ${r.time ? `- ${new Date(r.time).toLocaleString()}` : ''} <button onclick="removeReminder(${i})">Remove</button>`;
+        list.appendChild(div);
+    });
+}
+
+function removeReminder(index) {
+    const reminders = getUserData('reminders', []);
+    reminders.splice(index, 1);
+    setUserData('reminders', reminders);
+    loadReminders();
+}
+
+function saveStudyNote() {
+    const subject = document.getElementById('noteSubjectSelect').value;
+    const text = document.getElementById('studyNoteInput').value.trim();
+    if (!text) return;
+    const notes = getUserData('studyNotes', []);
+    notes.push({ subject, text, created: new Date().toISOString() });
+    setUserData('studyNotes', notes);
+    document.getElementById('studyNoteInput').value = '';
+    loadStudyNotes();
+}
+
+function loadStudyNotes() {
+    const list = document.getElementById('studyNotesList');
+    list.innerHTML = '';
+    const notes = getUserData('studyNotes', []);
+    notes.forEach(note => {
+        const div = document.createElement('div');
+        div.className = 'study-note';
+        div.innerHTML = `${note.subject ? `<strong>${note.subject}</strong>: ` : ''}${note.text}`;
+        list.appendChild(div);
+    });
+}
+
+// Ensure the user's data object exists in localStorage with default fields
+function ensureUserData(username) {
+    if (!username) return;
+    const key = `user_${username}`;
+    const existing = JSON.parse(localStorage.getItem(key) || 'null');
+    if (existing && typeof existing === 'object') return;
+    const defaults = {
+        xp: 0,
+        goals: [],
+        habits: [],
+        activePrograms: [],
+        activeChallenges: [],
+        completedChallenges: [],
+        reflections: [],
+        weeklyReflections: [],
+        achievements: [],
+        subjects: [],
+        studyGoals: [],
+        reminders: [],
+        studyNotes: []
+    };
+    localStorage.setItem(key, JSON.stringify(defaults));
 }
